@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=run_paragrapher
-#SBATCH --output=./logs/slurm/run_paragrapher_%j.out
+#SBATCH --job-name=run_preprocessing
+#SBATCH --output=../logs/preprocessing/slurm/run_preprocessing_%j.out
 
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
@@ -30,10 +30,10 @@ export NLTK_DATA=/home/nicolasal97/nltk_data
 export TORCHDYNAMO_CAPTURE_SCALAR_OUTPUTS=1
 
 echo "Activating virtual environment..."
-source ./venv/preprocessing/bin/activate
+source ../venv/preprocessing/bin/activate
 
 echo "Running python script..."
-python3 -u ./src/preprocessing/paragrapher.py
+python3 -u ../src/preprocessing/paragrapher.py
 
 deactivate
 module purge
