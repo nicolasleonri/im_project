@@ -1,0 +1,101 @@
+Fetching 284 files:   0%|          | 0/284 [00:00<?, ?it/s]Downloading 'consolidated-00007-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/d0a4da7699a859537c9560cb6a520c3b6564a155c0dd73bc6726c842e21c293c.incomplete' (resume from 1042138534/1403809116)
+Downloading 'consolidated-00002-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/8c5a60d88696c9a1b2bbe00741e4377c6865ab215c1d91ce546704c0cf69cf43.incomplete' (resume from 1072774872/1387293808)
+Downloading 'consolidated-00006-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/e68820a646bcb188c7cd2984603cb21c72f0669bdb53d46aba126669d994e608.incomplete' (resume from 1057961213/1664280968)
+Downloading 'consolidated-00003-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/85f9e03d0c96aee12c2cfeb6bc7338dc31999556969db0409dbbc4635c293d00.incomplete' (resume from 1068127185/1403809044)
+Downloading 'consolidated-00001-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/6cbafb6f9a76b8633d1253bafd4076fc6a1df6ae54168df0aa9c6be530fe9ff7.incomplete' (resume from 1073741824/2212729240)
+Downloading 'consolidated-00004-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/8e752e38e425ad8f09d4446a43300c313fd31ecbaf8b9890aea005f546b141d7.incomplete' (resume from 1059942772/1420324440)
+Downloading 'consolidated-00005-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/ddbbd0902701356f6d2d25e167dd5b22991d9ecf44aed8a901b05214cccddb43.incomplete' (resume from 1070553031/1387293640)
+Downloading 'consolidated-00008-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/5d128b04b9021798eeede9cdd15d4502e0e70e21df3c1f9a9cff11a16aee7643.incomplete' (resume from 1027197837/1420324448)
+Cancellation requested; stopping current tasks.
+Fetching 284 files:   1%|▏         | 4/284 [18:00<21:00:14, 270.05s/it]
+Downloading 'consolidated-00010-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/aede56970aecf38d1b712c1439843e05bbc0c9bb5e296da5bca0c1193a0cfec3.incomplete'
+Downloading 'consolidated-00009-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/9d348f647a1257ceae4a2c7aeb596f4b79285f1c9c96926b18f25f66a8097504.incomplete'
+Downloading 'consolidated-00011-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/5d378d97137b22956856272bc6295f2f87f53f280e55225345a4ccf11274b54f.incomplete'
+Downloading 'consolidated-00013-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/857de17d7943bbd3ec073f8ae03102beeeeabee8569e2262e7e731f26d5cbfa5.incomplete'
+Downloading 'consolidated-00012-of-00273.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Large-3-675B-Instruct-2512-NVFP4/blobs/b4385f59b5e24d4634c3858a195f726d222a9d704c163f423004356c14c92488.incomplete'
+Cancellation requested; stopping current tasks.
+Traceback (most recent call last):
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/tqdm/contrib/concurrent.py", line 51, in _executor_map
+    return list(tqdm_class(ex.map(fn, *iterables, chunksize=chunksize), **kwargs))
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/tqdm/std.py", line 1181, in __iter__
+    for obj in iterable:
+               ^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/concurrent/futures/_base.py", line 451, in result
+    self._condition.wait(timeout)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/threading.py", line 359, in wait
+    waiter.acquire()
+    ~~~~~~~~~~~~~~^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/nicolasal97/im_project/venv/preprocessing/bin/hf", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/huggingface_hub/cli/hf.py", line 59, in main
+    service.run()
+    ~~~~~~~~~~~^^
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/huggingface_hub/cli/download.py", line 136, in run
+    print(self._download())  # Print path to downloaded files
+          ~~~~~~~~~~~~~~^^
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/huggingface_hub/cli/download.py", line 169, in _download
+    return snapshot_download(
+        repo_id=self.repo_id,
+    ...<9 lines>...
+        max_workers=self.max_workers,
+    )
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/huggingface_hub/_snapshot_download.py", line 332, in snapshot_download
+    thread_map(
+    ~~~~~~~~~~^
+        _inner_hf_hub_download,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        tqdm_class=tqdm_class or hf_tqdm,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/tqdm/contrib/concurrent.py", line 69, in thread_map
+    return _executor_map(ThreadPoolExecutor, fn, *iterables, **tqdm_kwargs)
+  File "/home/nicolasal97/im_project/venv/preprocessing/lib/python3.13/site-packages/tqdm/contrib/concurrent.py", line 49, in _executor_map
+    with PoolExecutor(max_workers=max_workers, initializer=tqdm_class.set_lock,
+         ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      initargs=(lk,)) as ex:
+                      ^^^^^^^^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/concurrent/futures/_base.py", line 647, in __exit__
+    self.shutdown(wait=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/concurrent/futures/thread.py", line 239, in shutdown
+    t.join()
+    ~~~~~~^^
+  File "/trinity/shared/easybuild/software/Python/3.13.5-GCCcore-14.3.0/lib/python3.13/threading.py", line 1094, in join
+    self._handle.join(timeout)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyboardInterrupt
+Fetching 19 files:   0%|          | 0/19 [00:00<?, ?it/s]Downloading 'model-00002-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/8ffe80706a66b2f5ef1fb058806ccf09f124ec4ad38af7a377e44ab1ee2fd664.incomplete'
+Downloading 'consolidated.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/2cc4cc283a4bf3820f77ddb73bef3128b7159057c240b94a72b663d97af86f89.incomplete'
+Downloading 'config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/786d10ba172eb033ce576f199e13cd65c3a8d905.incomplete'
+Downloading '.gitattributes' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/ed18453a3dbda4c3ae158368dc6a42bf6488d24c.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/786d10ba172eb033ce576f199e13cd65c3a8d905
+Downloading 'SYSTEM_PROMPT.txt' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/5be4721443042209880d7b84bd2df6f950354ace.incomplete'
+Downloading 'README.md' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/4f2c434dc5b906af54b9f600302d057e80cc2c24.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/ed18453a3dbda4c3ae158368dc6a42bf6488d24c
+Downloading 'generation_config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/5d14022fd56f8ef7a703afca06d5c74ecd9f8a3b.incomplete'
+Downloading 'model-00001-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/91831c2ce219df0ce63bc33c6249e5cb01db8d93816bcebf975f1c406286520e.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/5be4721443042209880d7b84bd2df6f950354ace
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/4f2c434dc5b906af54b9f600302d057e80cc2c24
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/5d14022fd56f8ef7a703afca06d5c74ecd9f8a3b
+Downloading 'model-00003-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/99ec66e891f9563f568734eadfc5b7701e04620e8e163d4d5755277a3b50cf2f.incomplete'
+Downloading 'model-00004-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/e1df1527b12b1eb5cbd9a50914f9e6eb24e885ec830a3c16b5eed6ad0b53a396.incomplete'
+Downloading 'model-00006-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/2c41e6f80f2b5ca384ce703eac048a13daf2aff689c3acca66a8943f45338aae.incomplete'
+Downloading 'model-00005-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/3556ac03f47c24eb8ad27c237e25baad639c651d9596fd72cb1523137bf56163.incomplete'
+Fetching 19 files:   5%|▌         | 1/19 [00:01<00:23,  1.33s/it]Downloading 'model-00007-of-00010.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Mistral-Small-3.2-24B-Instruct-2506/blobs/62a725f154f6ba942a36b5cc450db2b2df32f434e3224558c789bc04fa05fd36.incomplete'

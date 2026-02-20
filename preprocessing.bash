@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=run_preprocessing
-#SBATCH --output=logs/preprocessing/slurm/run_preprocessing_%j.out
+#SBATCH --job-name=preprocessing_paragrapher
+#SBATCH --output=logs/preprocessing/slurm/preprocessing_paragrapher_%j.out
 
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
@@ -10,9 +10,10 @@
 #SBATCH --ntasks=1
 
 #SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=4G
 #SBATCH --gres=gpu:h100:1
-#SBATCH --mem-per-cpu=1G
-#SBATCH --time=00:00:10
+
+#SBATCH --time=00:01:00
 
 echo "Loading modules..."
 module purge
@@ -32,10 +33,16 @@ export TORCHDYNAMO_CAPTURE_SCALAR_OUTPUTS=1
 echo "Activating virtual environment..."
 source venv/preprocessing/bin/activate
 
-echo "Running python script..."
-python3 -u src/preprocessing/paragrapher.py
+echo "Running python script..." 
+python3 -u src/preprocessing/paragrapher.py \
+    --input data/preprocessing/informal_economy.csv \
+    --output data/preprocessing/test_set.csv \
+    --no_sample
+
+# python3 -u src/preprocessing/paragrapher.py \
+#         --input data/preprocessing/informal_economy.csv \
+#         --output data/preprocessing/test_set.csv
 
 deactivate
 module purge
-
 echo "Script finished"

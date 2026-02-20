@@ -1,0 +1,15 @@
+Loading modules...
+Setting folders...
+Activating virtual environment...
+Running python script...
+[2026-02-20 14:41:55] INFO utils_preprocessing.py:40: Loading input from: data/preprocessing/informal_economy.csv
+Traceback (most recent call last):
+  File "/home/nicolasal97/im_project/src/preprocessing/paragrapher.py", line 236, in <module>
+    main()
+    ~~~~^^
+  File "/home/nicolasal97/im_project/src/preprocessing/paragrapher.py", line 192, in main
+    df = load_input(args.input)
+  File "/home/nicolasal97/im_project/src/preprocessing/utils_preprocessing.py", line 50, in load_input
+    raise ValueError(f"Input CSV is missing required columns: {missing}")
+ValueError: Input CSV is missing required columns: {'title'}
+Script finished
