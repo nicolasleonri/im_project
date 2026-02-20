@@ -17,7 +17,9 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # Constants
-REQUIRED_COLUMNS = {"title", "content", "newspaper", "date"}
+REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
+
+KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
 
 PROMPT = """You are a text segmentation assistant. Your task is to identify and extract the paragraphs from a Peruvian Spanish journalistic article.
 
@@ -49,13 +51,15 @@ def load_input(path: str) -> pd.DataFrame:
     if missing:
         raise ValueError(f"Input CSV is missing required columns: {missing}")
 
+    df = df[KEEP_COLUMNS].copy() # Discard unnecessary columns early to reduce memory fragmentation
+
     original_len = len(df)
-    df = df.dropna(subset=["content", "title"])
+    df = df.dropna(subset=["content", "headline"])
     df = df[df["content"].str.strip().str.len() > 0]
     log.info(f"Loaded {original_len} articles, {len(df)} after dropping empty content.")
 
     # Normalize date to year for stratification
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d", errors="coerce")
     df["year"] = df["date"].dt.year
 
     # Assign stable article_id

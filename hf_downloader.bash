@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=preprocessing_paragrapher
-#SBATCH --output=logs/preprocessing/slurm/preprocessing_paragrapher_%j.out
+#SBATCH --job-name=hf_downloader
+#SBATCH --output=logs/preprocessing/slurm/hf_downloader_%j.out
 
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
@@ -11,9 +11,8 @@
 
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=2G
-#SBATCH --gres=gpu:h100:1
 
-#SBATCH --time=00:01:00
+#SBATCH --time=05:00:00
 
 echo "Loading modules..."
 module purge
@@ -33,15 +32,7 @@ export TORCHDYNAMO_CAPTURE_SCALAR_OUTPUTS=1
 echo "Activating virtual environment..."
 source venv/preprocessing/bin/activate
 
-echo "Running python script..." 
-python3 -u src/preprocessing/paragrapher.py \
-    --input data/preprocessing/informal_economy.csv \
-    --output data/preprocessing/test_set.csv \
-    --no_sample
-
-# python3 -u src/preprocessing/paragrapher.py \
-#         --input data/preprocessing/informal_economy.csv \
-#         --output data/preprocessing/test_set.csv
+hf download mistralai/Mistral-Small-3.2-24B-Instruct-2506
 
 deactivate
 module purge
