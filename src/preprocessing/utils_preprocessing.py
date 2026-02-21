@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from vllm import LLM, SamplingParams
 import spacy_udpipe
-
+from transformers import AutoTokenizer
 
 # Logging setup
 logging.basicConfig(
@@ -21,7 +21,7 @@ REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
 
 KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
 
-PROMPT = """You are a text segmentation assistant. Your task is to identify and extract the paragraphs from a Peruvian Spanish journalistic article.
+PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
 
 Rules:
 - Extract the paragraphs exactly as they appear in the text, preserving the original wording.
@@ -31,7 +31,7 @@ Rules:
 - Do not add explanations, comments or any text outside the JSON.
 
 Example output format:
-{{"paragraphs": ["First paragraph text.", "Second paragraph text.", "Third paragraph text."]}}
+{{"paragraphs": ["First paragraph text.", "Second paragraph text."]}}
 
 Article:
 {content}"""
@@ -68,12 +68,41 @@ def load_input(path: str) -> pd.DataFrame:
 
     return df
 
-def build_prompts(df: pd.DataFrame) -> list[str]:
-    """Build one prompt per article."""
-    return [
-        PROMPT.format(content=row["content"])
-        for _, row in df.iterrows()
-    ]
+def build_prompts(df: pd.DataFrame, model_name: str) -> list[str]:    
+    if "mistral" in model_name.lower():
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            fix_mistral_regex=True,
+        )
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+        )
+
+    prompts = []
+    for _, row in df.iterrows():
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You are a text segmentation assistant specialized in "
+                    "Peruvian Spanish journalistic articles. You always respond "
+                    "with valid JSON only, no additional text."
+                )
+            },
+            {
+                "role": "user",
+                "content": PROMPT.format(content=row["content"])
+            }
+        ]
+        prompt = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        prompts.append(prompt)
+    
+    return prompts
 
 def load_udpipe_model(lang: str = "es") -> object:
     """Download and load the spacy_udpipe model for Spanish."""

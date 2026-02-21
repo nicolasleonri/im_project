@@ -10,9 +10,9 @@
 #SBATCH --ntasks=1
 
 #SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=2G
+#SBATCH --mem-per-cpu=5G
 
-#SBATCH --time=05:00:00
+#SBATCH --time=01:00:00
 
 echo "Loading modules..."
 module purge
@@ -32,7 +32,8 @@ export TORCHDYNAMO_CAPTURE_SCALAR_OUTPUTS=1
 echo "Activating virtual environment..."
 source venv/preprocessing/bin/activate
 
-hf download mistralai/Mistral-Small-3.2-24B-Instruct-2506
+hf download jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym
+hf download BSC-LT/salamandra-7b-instruct
 
 deactivate
 module purge

@@ -1,0 +1,11 @@
+Job ID: 24906880
+Cluster: curta
+User/Group: nicolasal97/agfritz
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:42:23
+CPU Efficiency: 48.77% of 01:26:54 core-walltime
+Job Wall-clock time: 00:43:27
+Memory Utilized: 6.00 GB
+Memory Efficiency: 99.94% of 6.00 GB (3.00 GB/core)

@@ -5,6 +5,10 @@ import logging
 import re
 import sys
 from pathlib import Path
+from huggingface_hub import hf_hub_download
+from transformers import AutoTokenizer
+import math
+import csv
 
 import pandas as pd
 import spacy_udpipe
@@ -24,7 +28,7 @@ Workflow:
     5. Stratified sampling of target N paragraphs
 
 Output columns:
-    article_id, newspaper, date, title, content,
+    article_id, newspaper, date, headline, content,
     paragraph_i, paragraph_text,
     sentence_j, sentence_text
 
@@ -63,25 +67,40 @@ def parse_llm_response(response_text: str, article_id: str) -> list[str]:
 def extract_paragraphs_llm(
     df: pd.DataFrame,
     model_name: str,
-    batch_size: int = 8,
-    max_tokens: int = 2048,
+    batch_size: int = 64,
     temperature: float = 0.0,
+    tokenizer: str = None,
+    quantization: str = None,
+    tensor_parallel_size: int = 1,
+    tokenizer_mode: str = "auto",
 ) -> list[dict]:
     """
     Use vLLM to extract paragraphs from each article.
 
     Returns a list of dicts:
-        {article_id, newspaper, date, year, title, content,
+        {article_id, newspaper, date, year, headline, content,
          paragraph_i, paragraph_text}
     """
     log.info(f"Loading vLLM model: {model_name}")
-    llm = LLM(model=model_name)
+    
+    llm = LLM(
+        model=model_name,
+        tokenizer=tokenizer,
+        tokenizer_mode=tokenizer_mode,
+        tensor_parallel_size=tensor_parallel_size,
+        max_model_len=4096,
+        gpu_memory_utilization=0.90,
+        limit_mm_per_prompt={"image": 0},  # disable vision
+        # enforce_eager=True,   # disable CUDA graphs
+    )
+    
     sampling_params = SamplingParams(
         temperature=temperature,
-        max_tokens=max_tokens,
+        max_tokens=2048,
+        seed=42,
     )
 
-    prompts = build_prompts(df)
+    prompts = build_prompts(df, model_name)
     article_ids = df["article_id"].tolist()
     records = []
 
@@ -101,14 +120,14 @@ def extract_paragraphs_llm(
 
             for p_idx, para_text in enumerate(paragraphs):
                 records.append({
-                    "article_id":      article_id,
-                    "newspaper":       row["newspaper"],
-                    "date":            row["date"],
-                    "year":            row["year"],
-                    "title":           row["title"],
-                    "content":         row["content"],
-                    "paragraph_i":     p_idx,
-                    "paragraph_text":  para_text,
+                    "article_id": article_id,
+                    "newspaper": row["newspaper"],
+                    "date": row["date"],
+                    "year": row["year"],
+                    "headline": row["headline"],
+                    "content": row["content"],
+                    "paragraph_i": p_idx,
+                    "paragraph_text": para_text,
                 })
 
     log.info(f"Extracted {len(records)} paragraphs from {len(df)} articles.")
@@ -149,11 +168,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--input", required=True,
-        help="Path to input CSV (must contain: title, content, newspaper, date)."
+        help="Path to input CSV (must contain: headline, content, newspaper, date)."
     )
     parser.add_argument(
         "--output", required=True,
         help="Path for output CSV."
+    )
+    parser.add_argument(
+        "--tensor_parallel_size", type=int, default=1,
+        help="Adjust for running GPUs in parallel (Default: 1)."
     )
     parser.add_argument(
         "--n_samples", type=int, default=600,
@@ -164,12 +187,16 @@ def parse_args() -> argparse.Namespace:
         help="vLLM model name for paragraph extraction."
     )
     parser.add_argument(
-        "--batch_size", type=int, default=32,
-        help="Batch size for vLLM inference (default: 32)."
+        "--tokenizer", default="mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+        help="vLLM model name for paragraph extraction."
     )
     parser.add_argument(
-        "--max_tokens", type=int, default=4096,
-        help="Max tokens for LLM response (default: 4096)."
+        "--quantization", default=None,
+        help="vLLM model name for paragraph extraction."
+    )
+    parser.add_argument(
+        "--tokenizer_mode", default="auto",
+        help="Tokenizer mode for vLLM (default: auto)."
     )
     parser.add_argument(
         "--min_stratum_size", type=int, default=10,
@@ -183,26 +210,51 @@ def parse_args() -> argparse.Namespace:
         "--udpipe_lang", default="es",
         help="Language code for spacy_udpipe (default: es)."
     )
+    parser.add_argument(
+        "--skip_vllm", action="store_true",
+        help="Skip LLM extraction and load precomputed paragraphs instead."
+    )
     return parser.parse_args()
 
 def main():
     args = parse_args()
 
-    # Step 1: Load input
-    df = load_input(args.input)
-
-    # Steps 2 & 3: LLM paragraph extraction
-    paragraph_records = extract_paragraphs_llm(
-        df,
-        model_name=args.model,
-        batch_size=args.batch_size,
-        max_tokens=args.max_tokens,
-    )
-    para_df = pd.DataFrame(paragraph_records)
+    if args.skip_vllm:
+        log.info("Skipping LLM extraction. Loading precomputed paragraphs from CSV.")
+        para_df = pd.read_csv(args.input)
+        log.info(f"Loaded {len(para_df)} precomputed paragraph records.")
+    else:
+        # Step 1: Load input
+        df = load_input(args.input)
+        
+        # Steps 2 & 3: LLM paragraph extraction
+        paragraph_records = extract_paragraphs_llm(
+            df,
+            tensor_parallel_size=args.tensor_parallel_size,
+            model_name=args.model,
+            tokenizer=args.tokenizer,
+            quantization=args.quantization,
+            tokenizer_mode=args.tokenizer_mode,
+        )
+        para_df = pd.DataFrame(paragraph_records)
+        para_df.to_csv(
+            f"data/preprocessing/paragraphs_{args.model.split('/')[-1]}.csv",
+            index=False,
+            header=True,
+            encoding="utf-8",
+            na_rep='NA',
+            sep=';',
+            quotechar='"',
+            date_format='%d-%M-%Y',
+            quoting=csv.QUOTE_ALL,
+            decimal='.', 
+            errors='strict',
+        )
+        log.info(f"Paragraph records saved to data/preprocessing/paragraphs_{args.model.split('/')[-1]}.csv")
 
     # Steps 4 & 5: Sentence segmentation
     nlp = load_udpipe_model(args.udpipe_lang)
-    sentence_records = segment_sentences(para_df, nlp)
+    sentence_records = segment_sentences(para_df.to_dict("records"), nlp)
     sent_df = pd.DataFrame(sentence_records)
 
     # Step 6: Stratified sampling (optional)
@@ -219,7 +271,7 @@ def main():
     # Reorder columns for output
     output_cols = [
         "article_id", "newspaper", "date", "year",
-        "title", "content",
+        "headline", "content",
         "paragraph_i", "paragraph_text",
         "sentence_j", "sentence_text",
     ]
@@ -227,7 +279,20 @@ def main():
 
     # Save
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-    output_df.to_csv(args.output, index=False, encoding="utf-8")
+    output_df.to_csv(
+            args.output,
+            index=False,
+            header=True,
+            encoding="utf-8",
+            na_rep='NA',
+            sep=';',
+            quotechar='"',
+            date_format='%d-%M-%Y',
+            quoting=csv.QUOTE_ALL,
+            decimal='.', 
+            errors='strict',
+        )
+
     log.info(f"Output saved to: {args.output}")
     log.info(f"Final shape: {output_df.shape[0]} rows x {output_df.shape[1]} columns.")
 
