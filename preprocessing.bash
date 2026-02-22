@@ -35,27 +35,19 @@ echo "Activating virtual environment..."
 source venv/preprocessing/bin/activate
 
 echo "Running python script..." 
-python3 -u src/preprocessing/paragrapher.py \
-    --input data/preprocessing/informal_economy.csv \
-    --output data/preprocessing/test_set.csv \
-    --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
-    --tokenizer_mode mistral \
-    --tensor_parallel_size 1
-    --no_sample
-
-python3 -u src/preprocessing/paragrapher.py \
-    --input data/preprocessing/informal_economy.csv \
-    --output data/preprocessing/test_set.csv \
-    --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
-    --tokenizer_mode mistral \
-    --tensor_parallel_size 1
-
 # python3 -u src/preprocessing/paragrapher.py \
 #     --input data/preprocessing/informal_economy.csv \
 #     --output data/preprocessing/test_set.csv \
-#     --model BSC-LT/salamandra-7b-instruct \
-#     --tokenizer BSC-LT/salamandra-7b-instruct \
-#     --tensor_parallel_size 2 
+#     --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
+#     --tokenizer_mode mistral \
+#     --tensor_parallel_size 1
+
+python3 -u src/preprocessing/paragrapher.py \
+    --input data/preprocessing/informal_economy.csv \
+    --output data/preprocessing/test_set.csv \
+    --model BSC-LT/salamandra-7b-instruct \
+    --tokenizer BSC-LT/salamandra-7b-instruct \
+    --tensor_parallel_size 1
 
 deactivate
 module purge

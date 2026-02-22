@@ -256,6 +256,21 @@ def main():
     nlp = load_udpipe_model(args.udpipe_lang)
     sentence_records = segment_sentences(para_df.to_dict("records"), nlp)
     sent_df = pd.DataFrame(sentence_records)
+    sent_df.to_csv(
+            f"data/preprocessing/sentences_{args.model.split('/')[-1]}.csv",
+            index=False,
+            header=True,
+            encoding="utf-8",
+            na_rep='NA',
+            sep=';',
+            quotechar='"',
+            date_format='%d-%M-%Y',
+            quoting=csv.QUOTE_ALL,
+            decimal='.', 
+            errors='strict',
+        )
+    log.info(f"Sentences records saved to data/preprocessing/sentences_{args.model.split('/')[-1]}.csv")
+
 
     # Step 6: Stratified sampling (optional)
     if args.no_sample:
