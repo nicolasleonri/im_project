@@ -3,7 +3,7 @@
 #SBATCH --output=logs/preprocessing/slurm/preprocessing_paragrapher_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
-#SBATCH --qos=standard
+#SBATCH --qos=prio
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
