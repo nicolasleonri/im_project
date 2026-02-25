@@ -131,25 +131,35 @@ def extract_paragraphs_llm(
     log.info(f"Extracted {len(records)} paragraphs from {len(df)} articles.")
     return records
 
+def split_sentences_fallback(text: str) -> list[str]:
+    """Regex fallback for sentence splitting when NLP model returns a single sentence."""
+    sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÜÑ«\"\'])', text)
+    return [s.strip() for s in sentences if s.strip()]
 
 def segment_sentences(records: list[dict], nlp) -> list[dict]:
     """
-    For each paragraph record, segment into sentences using spacy_udpipe.
-
-    Returns a list of dicts with an additional sentence_j and sentence_text.
+    For each paragraph record, segment into sentences.
+    Falls back to regex splitting if NLP model returns a single sentence
+    identical to the paragraph.
+    Returns a list of dicts with additional sentence_j and sentence_text.
     """
-    log.info("Segmenting paragraphs into sentences with spacy_udpipe...")
+    log.info("Segmenting paragraphs into sentences...")
     sentence_records = []
-
     paragraph_texts = [r["paragraph_text"] for r in records]
+    n_fallback = 0
 
-    # Process in batches for efficiency
     for record, doc in tqdm(
         zip(records, nlp.pipe(paragraph_texts, batch_size=64)),
         total=len(records),
         desc="Sentence segmentation",
     ):
         sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
+
+        # Fallback: UDPipe/spaCy returned single sentence equal to full paragraph
+        if len(sentences) == 1 and sentences[0] == record["paragraph_text"].strip():
+            sentences = split_sentences_fallback(record["paragraph_text"])
+            n_fallback += 1
+
         for s_idx, sent_text in enumerate(sentences):
             sentence_records.append({
                 **record,
@@ -158,6 +168,7 @@ def segment_sentences(records: list[dict], nlp) -> list[dict]:
             })
 
     log.info(f"Produced {len(sentence_records)} sentence records.")
+    log.info(f"Regex fallback used for {n_fallback}/{len(records)} paragraphs ({100*n_fallback/len(records):.1f}%).")
     return sentence_records
 
 def parse_args() -> argparse.Namespace:
@@ -205,12 +216,16 @@ def parse_args() -> argparse.Namespace:
         help="If set, output all extracted paragraphs without sampling."
     )
     parser.add_argument(
-        "--udpipe_lang", default="es",
-        help="Language code for spacy_udpipe (default: es)."
-    )
-    parser.add_argument(
         "--skip_vllm", action="store_true",
         help="Skip LLM extraction and load precomputed paragraphs instead."
+    )
+    parser.add_argument(
+    "--spacy_model", default="es_dep_news_trf",
+    help="spaCy model for sentence segmentation (default: es_dep_news_trf)."
+    )
+    parser.add_argument(
+        "--udpipe_lang", default="es",
+        help="Fallback spacy_udpipe language code (default: es)."
     )
     return parser.parse_args()
 
@@ -219,11 +234,11 @@ def main():
 
     if args.skip_vllm:
         log.info("Skipping LLM extraction. Loading precomputed paragraphs from CSV.")
-        para_df = pd.read_csv(args.input)
+        para_df = load_input(args.input, skip=True)
         log.info(f"Loaded {len(para_df)} precomputed paragraph records.")
     else:
         # Step 1: Load input
-        df = load_input(args.input)
+        df = load_input(args.input, skip=False)
         
         # Steps 2 & 3: LLM paragraph extraction
         paragraph_records = extract_paragraphs_llm(
@@ -251,7 +266,11 @@ def main():
         log.info(f"Paragraph records saved to data/preprocessing/paragraphs_{args.model.split('/')[-1]}.csv")
 
     # Steps 4 & 5: Sentence segmentation
-    nlp = load_udpipe_model(args.udpipe_lang)
+    nlp, model_used = load_spacy_model(
+        preferred=args.spacy_model,
+        fallback_lang=args.udpipe_lang,
+    )
+    log.info(f"Using sentence segmentation model: {model_used}")
     sentence_records = segment_sentences(para_df.to_dict("records"), nlp)
     sent_df = pd.DataFrame(sentence_records)
     sent_df.to_csv(

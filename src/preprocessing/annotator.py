@@ -199,8 +199,8 @@ def parse_args() -> argparse.Namespace:
         help="Tokenizer name or path (defaults to model)."
     )
     parser.add_argument(
-        "--tokenizer_mode", default="mistral",
-        help="Tokenizer mode for vLLM (default: mistral)."
+        "--tokenizer_mode", default="auto",
+        help="Tokenizer mode for vLLM (default: auto)."
     )
     parser.add_argument(
         "--tensor_parallel_size", type=int, default=1,

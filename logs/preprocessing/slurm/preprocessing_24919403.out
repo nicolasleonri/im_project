@@ -1,0 +1,13 @@
+Setup done. Running python script...
+[2026-02-25 12:26:15] INFO annotator.py:232: Loading input from: data/preprocessing/test_set_mistral.csv
+[2026-02-25 12:26:15] INFO annotator.py:241: Loaded 718 sentence records.
+[2026-02-25 12:26:15] INFO utils_preprocessing.py:174: Loading annotation guidelines from: data/preprocessing/annotation_guidelines_v1.md
+[2026-02-25 12:26:15] INFO utils_preprocessing.py:177: Guidelines loaded: 21047 characters.
+[2026-02-25 12:26:15] INFO annotator.py:122: Loading vLLM model: Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit
+INFO 02-25 12:26:15 [utils.py:253] non-default args: {'tokenizer': 'meta-llama/Llama-3.1-8B-Instruct', 'max_model_len': 12288, 'disable_log_stats': True, 'limit_mm_per_prompt': {'image': 0}, 'model': 'Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit'}
+INFO 02-25 12:26:16 [model.py:631] Resolved architecture: LlamaForCausalLM
+INFO 02-25 12:26:16 [model.py:1745] Using max model len 12288
+INFO 02-25 12:26:17 [awq_marlin.py:162] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.
+INFO 02-25 12:26:17 [scheduler.py:216] Chunked prefill is enabled with max_num_batched_tokens=8192.
+ERROR 02-25 12:26:18 [config.py:307] Error retrieving safetensors: 'Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit' is not a safetensors repo. Couldn't find 'model.safetensors.index.json' or 'model.safetensors' files., retrying 1 of 2
+ERROR 02-25 12:26:20 [config.py:305] Error retrieving safetensors: 'Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit' is not a safetensors repo. Couldn't find 'model.safetensors.index.json' or 'model.safetensors' files.

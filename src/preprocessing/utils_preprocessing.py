@@ -9,6 +9,8 @@ import spacy_udpipe
 from transformers import AutoTokenizer
 import gc
 import torch
+import spacy
+import torch.distributed as dist
 
 # Logging setup
 logging.basicConfig(
@@ -19,8 +21,6 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # Constants
-REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
-KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
 PARAGRAPHER_PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
 
 Rules:
@@ -128,9 +128,10 @@ Ejemplo de output válido:
 {{"label_binary": "argumentative", "label_component": "claim", "confidence_binary": 0.91, "confidence_component": 0.85, "reasoning": "La oración expresa una posición evaluativa sobre la política de formalización que podría ser cuestionada."}}"""
 
 # Functions
-def load_input(path: str) -> pd.DataFrame:
+def load_input(path: str, skip: bool = False) -> pd.DataFrame:
     """Load input CSV and validate required columns."""
     log.info(f"Loading input from: {path}")
+    
     df = pd.read_csv(path,
                     sep=";", 
                     decimal=".",
@@ -138,11 +139,19 @@ def load_input(path: str) -> pd.DataFrame:
                     quotechar='"', 
                     encoding="utf-8")
 
+    if skip:
+        REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date", 
+                          "article_id", "paragraph_i", "paragraph_text"}
+    else:
+        REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
+        
     missing = REQUIRED_COLUMNS - set(df.columns)
     if missing:
         raise ValueError(f"Input CSV is missing required columns: {missing}")
 
-    df = df[KEEP_COLUMNS].copy() # Discard unnecessary columns early to reduce memory fragmentation
+    if not skip:
+        KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
+        df = df[KEEP_COLUMNS].copy() # Discard unnecessary columns early to reduce memory fragmentation
 
     original_len = len(df)
     df = df.dropna(subset=["content", "headline"])
@@ -154,8 +163,9 @@ def load_input(path: str) -> pd.DataFrame:
     df["year"] = df["date"].dt.year
 
     # Assign stable article_id
-    df = df.reset_index(drop=True)
-    df["article_id"] = df.index.map(lambda i: f"ART_{i:06d}")
+    if not skip:
+        df = df.reset_index(drop=True)
+        df["article_id"] = df.index.map(lambda i: f"ART_{i:06d}")
 
     return df
 
@@ -255,16 +265,29 @@ def build_annotation_prompts(df: pd.DataFrame, guidelines: str, model_name: str,
 
     return prompts
 
-def load_udpipe_model(lang: str = "es") -> object:
-    """Download and load the spacy_udpipe model for Spanish."""
-    log.info(f"Loading spacy_udpipe model for language: {lang}")
+def load_spacy_model(preferred: str = "es_dep_news_trf", fallback_lang: str = "es") -> tuple:
+    """
+    Load spaCy model for sentence segmentation.
+    Returns (nlp, model_used) where model_used is a string for logging.
+    """
     try:
-        nlp = spacy_udpipe.load(lang)
+        nlp = spacy.load(preferred)
+        log.info(f"Loaded spaCy model: {preferred}")
+        return nlp, preferred
     except Exception:
-        log.info("Model not found locally. Downloading...")
-        spacy_udpipe.download(lang)
-        nlp = spacy_udpipe.load(lang)
-    return nlp
+        log.warning(
+            f"Could not load {preferred}. "
+            f"Install with: python3 -m spacy download {preferred}. "
+            f"Falling back to spacy_udpipe ({fallback_lang})."
+        )
+        try:
+            nlp = spacy_udpipe.load(fallback_lang)
+        except Exception:
+            log.info(f"Downloading spacy_udpipe model: {fallback_lang}")
+            spacy_udpipe.download(fallback_lang)
+            nlp = spacy_udpipe.load(fallback_lang)
+        log.info(f"Loaded spacy_udpipe model: {fallback_lang}")
+        return nlp, f"udpipe:{fallback_lang}"
 
 def report_distribution(df: pd.DataFrame, strat_cols: list[str]) -> None:
     """Log stratum sizes for a given stratification."""
@@ -370,5 +393,7 @@ def clear_gpu_memory():
         torch.cuda.empty_cache()
         torch.cuda.synchronize()
         torch.cuda.empty_cache()
+    if dist.is_initialized():
+        dist.destroy_process_group()
     else:
         print("⚠️ No GPU available, skipping CUDA cleanup")
