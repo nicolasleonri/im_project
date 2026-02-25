@@ -1,0 +1,26 @@
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Downloading 'LICENSE' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab.incomplete'
+Downloading 'merges.txt' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0.incomplete'
+Downloading '.gitattributes' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/39e7ae7fd0fdd2d8e5bc370225bb1f3eb8648ac8.incomplete'
+Downloading 'model-00001-of-00002.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/4ad6e70f93823a9228931615e04b5e9293854c236fb4bd5f85e27f3b600605ad.incomplete'
+Downloading 'generation_config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/cdb9fc9fa399db7f238933ee017a53ac093a893a.incomplete'
+Downloading 'model-00002-of-00002.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/920a8cc9d3c81668f18014a69bb041ab8bab22a31640a713f90f5e7580e2f126.incomplete'
+Downloading 'config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/151502158a020c611321e9526c2a225b6ac159d0.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/cdb9fc9fa399db7f238933ee017a53ac093a893a
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/6634c8cc3133b3848ec74b9f275acaaa1ea618ab
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/151502158a020c611321e9526c2a225b6ac159d0
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/39e7ae7fd0fdd2d8e5bc370225bb1f3eb8648ac8
+Downloading 'README.md' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/e46e755b16582525efc84bcdf72ec86c9564e41e.incomplete'
+Fetching 12 files:   8%|▊         | 1/12 [00:00<00:02,  5.34it/s]Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/e46e755b16582525efc84bcdf72ec86c9564e41e
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0
+Downloading 'model.safetensors.index.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/bca75b7cf2f2ee31586b7455a57eb559436dc2ad.incomplete'
+Downloading 'tokenizer.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/443909a61d429dff23010e5bddd28ff530edda00.incomplete'
+Downloading 'tokenizer_config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672.incomplete'
+Downloading 'vocab.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/4783fe10ac3adce15ac8f358ef5462739852c569.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/bca75b7cf2f2ee31586b7455a57eb559436dc2ad
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/07bfe0640cb5a0037f9322287fbfc682806cf672
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/4783fe10ac3adce15ac8f358ef5462739852c569
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/443909a61d429dff23010e5bddd28ff530edda00
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/920a8cc9d3c81668f18014a69bb041ab8bab22a31640a713f90f5e7580e2f126
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/blobs/4ad6e70f93823a9228931615e04b5e9293854c236fb4bd5f85e27f3b600605ad
+Fetching 12 files:  58%|█████▊    | 7/12 [14:56<11:09, 133.83s/it]Fetching 12 files: 100%|██████████| 12/12 [14:56<00:00, 74.73s/it]
+/scratch/nicolasal97/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct-AWQ/snapshots/b25037543e9394b818fdfca67ab2a00ecc7dd641

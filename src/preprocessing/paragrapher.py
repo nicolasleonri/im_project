@@ -5,9 +5,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from huggingface_hub import hf_hub_download
 from transformers import AutoTokenizer
-import math
 import csv
 
 import pandas as pd
@@ -85,10 +83,10 @@ def extract_paragraphs_llm(
     
     llm = LLM(
         model=model_name,
-        tokenizer=tokenizer,
+        tokenizer=tokenizer if tokenizer else model_name,
         tokenizer_mode=tokenizer_mode,
         tensor_parallel_size=tensor_parallel_size,
-        max_model_len=4096,
+        max_model_len=8192,
         gpu_memory_utilization=0.90,
         limit_mm_per_prompt={"image": 0},  # disable vision
         # enforce_eager=True,   # disable CUDA graphs
@@ -96,11 +94,11 @@ def extract_paragraphs_llm(
     
     sampling_params = SamplingParams(
         temperature=temperature,
-        max_tokens=2048,
+        max_tokens=4096,
         seed=42,
     )
 
-    prompts = build_prompts(df, model_name)
+    prompts = build_paragrapher_prompts(df, model_name)
     article_ids = df["article_id"].tolist()
     records = []
 
@@ -188,11 +186,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--tokenizer", default="mistralai/Mistral-Small-3.2-24B-Instruct-2506",
-        help="vLLM model name for paragraph extraction."
+        help="Tokenizer model name for paragraph extraction."
     )
     parser.add_argument(
         "--quantization", default=None,
-        help="vLLM model name for paragraph extraction."
+        help="Quantization method for paragraph extraction."
     )
     parser.add_argument(
         "--tokenizer_mode", default="auto",
@@ -245,7 +243,7 @@ def main():
             na_rep='NA',
             sep=';',
             quotechar='"',
-            date_format='%d-%M-%Y',
+            date_format='%Y-%m-%d', # ISO format
             quoting=csv.QUOTE_ALL,
             decimal='.', 
             errors='strict',
@@ -264,13 +262,15 @@ def main():
             na_rep='NA',
             sep=';',
             quotechar='"',
-            date_format='%d-%M-%Y',
+            date_format='%Y-%m-%d', # ISO format
             quoting=csv.QUOTE_ALL,
             decimal='.', 
             errors='strict',
         )
     log.info(f"Sentences records saved to data/preprocessing/sentences_{args.model.split('/')[-1]}.csv")
 
+    clear_gpu_memory()
+    log.info("GPU memory cleared after LLM inference and sentence segmentation.")
 
     # Step 6: Stratified sampling (optional)
     if args.no_sample:
@@ -302,7 +302,7 @@ def main():
             na_rep='NA',
             sep=';',
             quotechar='"',
-            date_format='%d-%M-%Y',
+            date_format='%Y-%m-%d', # ISO format
             quoting=csv.QUOTE_ALL,
             decimal='.', 
             errors='strict',

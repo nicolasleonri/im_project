@@ -7,6 +7,8 @@ from pathlib import Path
 from vllm import LLM, SamplingParams
 import spacy_udpipe
 from transformers import AutoTokenizer
+import gc
+import torch
 
 # Logging setup
 logging.basicConfig(
@@ -18,10 +20,8 @@ log = logging.getLogger(__name__)
 
 # Constants
 REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
-
 KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
-
-PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
+PARAGRAPHER_PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
 
 Rules:
 - Extract the paragraphs exactly as they appear in the text, preserving the original wording.
@@ -35,6 +35,97 @@ Example output format:
 
 Article:
 {content}"""
+
+VALID_BINARY = {"argumentative", "non-argumentative"}
+VALID_COMPONENT = {"claim", "premise", "none"}
+DECISION_TREE = """
+DECISION TREE FOR ANNOTATION (apply step by step):
+
+1. Is the sentence argumentative in its local context?
+   → NO:  label = none. STOP.
+   → YES: continue to step 2.
+
+2. Does the sentence primarily SUPPORT another segment?
+   → YES: continue to step 3.
+   → NO:  continue to step 5.
+
+3. Can it answer the question "Why?" relative to another segment?
+   → YES: label = premise. STOP.
+   → NO:  continue to step 4.
+
+4. Does it provide evidence, data, example, causal explanation, or authority reference?
+   → YES: label = premise. STOP.
+   → NO:  label = none. STOP.
+
+5. Does the sentence express a standpoint that could reasonably be challenged?
+   → YES: label = claim. STOP.
+   → NO:  continue to step 6.
+
+6. Is it framed as a conclusion (e.g., "por lo tanto", "en consecuencia", "por ende")?
+   → YES: label = claim. STOP.
+   → NO:  continue to step 7.
+
+7. Is it reported speech expressing an evaluative or diagnostic position?
+   → YES: label = claim. STOP.
+   → NO:  continue to step 8.
+
+8. Does its argumentative role require more than minimal local reconstruction?
+   → YES: label = none. STOP.
+   → NO:  label = claim. STOP.
+"""
+ANNOTATION_PROMPT = """## Guías de anotación
+{guidelines}
+
+---
+
+## Contexto del artículo
+
+**Titular:** {headline}
+
+**Contenido completo:**
+{content}
+
+---
+
+## Contexto inmediato
+
+**Párrafo:**
+{paragraph_text}
+
+---
+
+## Tarea
+
+Anota la siguiente oración (marcada con >> <<) siguiendo las guías de anotación.
+
+Párrafo con oración marcada:
+{annotated_paragraph}
+
+---
+
+## Árbol de decisión
+Aplica los siguientes pasos en orden para determinar la etiqueta:
+{decision_tree}
+
+---
+
+## Instrucciones de output
+
+Responde ÚNICAMENTE con un objeto JSON válido con exactamente estas claves:
+
+- "label_binary": "argumentative" o "non-argumentative"
+- "label_component": "claim", "premise" o "none"
+- "confidence_binary": número entre 0.0 y 1.0
+- "confidence_component": número entre 0.0 y 1.0
+- "reasoning": justificación breve en español (máximo 2 oraciones) basada en las guías
+
+Restricciones:
+- Si label_binary es "non-argumentative", label_component debe ser "none".
+- No uses valores fuera de los permitidos para label_binary y label_component.
+- No añadas texto fuera del JSON.
+
+Ejemplo de output válido:
+{{"label_binary": "argumentative", "label_component": "claim", "confidence_binary": 0.91, "confidence_component": 0.85, "reasoning": "La oración expresa una posición evaluativa sobre la política de formalización que podría ser cuestionada."}}"""
 
 # Functions
 def load_input(path: str) -> pd.DataFrame:
@@ -68,16 +159,22 @@ def load_input(path: str) -> pd.DataFrame:
 
     return df
 
-def build_prompts(df: pd.DataFrame, model_name: str) -> list[str]:    
+def load_guidelines(path: str) -> str:
+    """Load annotation guidelines from a markdown file."""
+    log.info(f"Loading annotation guidelines from: {path}")
+    with open(path, "r", encoding="utf-8") as f:
+        guidelines = f.read()
+    log.info(f"Guidelines loaded: {len(guidelines)} characters.")
+    return guidelines
+
+def build_paragrapher_prompts(df: pd.DataFrame, model_name: str) -> list[str]:    
     if "mistral" in model_name.lower():
         tokenizer = AutoTokenizer.from_pretrained(
             model_name,
             fix_mistral_regex=True,
         )
     else:
-        tokenizer = AutoTokenizer.from_pretrained(
-            model_name,
-        )
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     prompts = []
     for _, row in df.iterrows():
@@ -92,7 +189,7 @@ def build_prompts(df: pd.DataFrame, model_name: str) -> list[str]:
             },
             {
                 "role": "user",
-                "content": PROMPT.format(content=row["content"])
+                "content": PARAGRAPHER_PROMPT.format(content=row["content"])
             }
         ]
         prompt = tokenizer.apply_chat_template(
@@ -102,6 +199,60 @@ def build_prompts(df: pd.DataFrame, model_name: str) -> list[str]:
         )
         prompts.append(prompt)
     
+    return prompts
+
+def annotate_target_sentence(paragraph_text: str, sentence_text: str) -> str:
+    """Mark the target sentence within its paragraph context with >> <<."""
+    if sentence_text in paragraph_text:
+        return paragraph_text.replace(sentence_text, f">> {sentence_text} <<", 1)
+    # Fallback: append marked sentence if not found
+    log.warning(f"Sentence not found in paragraph, appending marked version.")
+    return f"{paragraph_text}\n\n>> {sentence_text} <<"
+
+def build_annotation_prompts(df: pd.DataFrame, guidelines: str, model_name: str,) -> list[str]:
+    if "mistral" in model_name.lower():
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            fix_mistral_regex=True,
+        )
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    prompts = []
+    for _, row in df.iterrows():
+        annotated_paragraph = annotate_target_sentence(
+            str(row["paragraph_text"]),
+            str(row["sentence_text"]),
+        )
+        user_content = ANNOTATION_PROMPT.format(
+            guidelines=guidelines,
+            headline=row["headline"],
+            content=row["content"],
+            paragraph_text=row["paragraph_text"],
+            annotated_paragraph=annotated_paragraph,
+            decision_tree=DECISION_TREE,
+        )
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Eres un experto en minería de argumentos (Argument Mining) especializado en textos periodísticos en español peruano sobre economía informal."
+                    "Tu tarea es anotar oraciones siguiendo unas guías de anotación específicas."
+                    "Siempre respondes ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin explicaciones fuera del JSON, sin bloques de código markdown."
+                )
+            },
+            {
+                "role": "user", 
+                "content": user_content
+            },
+        ]
+        prompt = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        prompts.append(prompt)
+
     return prompts
 
 def load_udpipe_model(lang: str = "es") -> object:
@@ -211,3 +362,13 @@ def stratified_sample(
         f"{len(result)} sentence rows."
     )
     return result
+
+def clear_gpu_memory():
+    """Comprehensive GPU memory cleanup"""
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+        torch.cuda.empty_cache()
+    else:
+        print("⚠️ No GPU available, skipping CUDA cleanup")

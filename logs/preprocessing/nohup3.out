@@ -1,0 +1,28 @@
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Downloading 'model-00001-of-00004.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/6f377708ba82b757eccb1d5ba979d0c41896817b1eb612226f2fbb8eb4efbbc7.incomplete'
+Downloading 'config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/722abefbaabae8d5d0fb19473893d4e72f6916ac.incomplete'
+Downloading 'model-00002-of-00004.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/e24de1465f1f4e7ba51b4e23df79f5618db546a8ee907e378bab92710b8bc120.incomplete'
+Downloading 'generation_config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d079819ecbae97fb347994d8831a81ca9f6924b4.incomplete'
+Downloading 'figures/benchmark.jpg' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d1fd67ec1bf748c24b244b6efd825ded1b147787.incomplete'
+Downloading '.gitattributes' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/52373fe24473b1aa44333d318f578ae6bf04b49b.incomplete'
+Downloading 'model-00003-of-00004.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/3b185e47cc8422ec7e4b5c4bf9effadb9581789f15b609bf2b9a8245069809e2.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/722abefbaabae8d5d0fb19473893d4e72f6916ac
+Downloading 'README.md' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/efdc026e56d38efeedeb0dfcba54d1e023fced0e.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d079819ecbae97fb347994d8831a81ca9f6924b4
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/52373fe24473b1aa44333d318f578ae6bf04b49b
+Fetching 13 files:   8%|▊         | 1/13 [00:00<00:04,  2.55it/s]Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d1fd67ec1bf748c24b244b6efd825ded1b147787
+Downloading 'model-00004-of-00004.safetensors' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/1ffa8fad71aa8838e789ca7a07867fa1a5ee0575f07b713ae59466af5cd2c71f.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/efdc026e56d38efeedeb0dfcba54d1e023fced0e
+Fetching 13 files:  15%|█▌        | 2/13 [00:00<00:02,  3.68it/s]Downloading 'model.safetensors.index.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d6493abe53de4bf0cbf7b31f2970724967d30564.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/d6493abe53de4bf0cbf7b31f2970724967d30564
+Downloading 'special_tokens_map.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/1d385d62cf08bca35254547902b792c243656ec1.incomplete'
+Downloading 'tokenizer.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/e20ddafc659ba90242154b55275402edeca0715e5dbb30f56815a4ce081f4893.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/1d385d62cf08bca35254547902b792c243656ec1
+Downloading 'tokenizer_config.json' to '/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/b068ffca3220a746ba50cc69f850e544217e3a86.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/b068ffca3220a746ba50cc69f850e544217e3a86
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/e20ddafc659ba90242154b55275402edeca0715e5dbb30f56815a4ce081f4893
+Fetching 13 files:  31%|███       | 4/13 [00:07<00:19,  2.18s/it]Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/3b185e47cc8422ec7e4b5c4bf9effadb9581789f15b609bf2b9a8245069809e2
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/e24de1465f1f4e7ba51b4e23df79f5618db546a8ee907e378bab92710b8bc120
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/1ffa8fad71aa8838e789ca7a07867fa1a5ee0575f07b713ae59466af5cd2c71f
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/blobs/6f377708ba82b757eccb1d5ba979d0c41896817b1eb612226f2fbb8eb4efbbc7
+Fetching 13 files:  46%|████▌     | 6/13 [35:34<58:45, 503.69s/it]Fetching 13 files: 100%|██████████| 13/13 [35:34<00:00, 164.19s/it]
+/scratch/nicolasal97/.cache/huggingface/hub/models--Valdemardi--DeepSeek-R1-Distill-Qwen-32B-AWQ/snapshots/1de6a3f7b151f6ea0f6d42acb3566e094eb8a264
