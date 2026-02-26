@@ -1,16 +1,16 @@
 #!/bin/bash
-#SBATCH --job-name=preprocessing_paragrapher
-#SBATCH --output=logs/preprocessing/slurm/preprocessing_paragrapher_%j.out
+#SBATCH --job-name=preprocessing_annotator
+#SBATCH --output=logs/preprocessing/slurm/preprocessing_annotator_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
 #SBATCH --qos=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=3G
-#SBATCH --gres=gpu:h100:1
-#SBATCH --time=10:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=1G
+############## alt SBATCH --gres=gpu:h100:1
+#SBATCH --time=00:05:00
 
 # Load necessary modules
 module purge
@@ -35,34 +35,40 @@ export TORCH_NCCL_ASYNC_ERROR_HANDLING=0
 source venv/preprocessing/bin/activate
 
 echo "Setup done. Running python script..."
-#### FIRST TASK: Paragrapher + Sentence Splitter
-# ## Needs around 2h + 2x3GB + 1xA5000
+############# FIRST TASK: Paragrapher + Sentence Splitter #############
+### Needs around 2h30min + 2x2GB + 1xA5000
 # python3 -u src/preprocessing/paragrapher.py \
-#     --input data/preprocessing/informal_economy.csv \
+#     --input data/preprocessing/sentences_Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit.csv \
 #     --output data/preprocessing/test_set_llama.csv \
 #     --model Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit \
 #     --tokenizer meta-llama/Llama-3.1-8B-Instruct \
-#     --tensor_parallel_size 1
+#     --tensor_parallel_size 1 \
+#     --skip_vllm \
+#     --skip_spacy 
 
-# ## Needs around 5h + 2x3GB + 1xA5000
+### Needs around 3h + 2x2GB + 1xA5000
 # python3 -u src/preprocessing/paragrapher.py \
-#     --input data/preprocessing/informal_economy.csv \
+#     --input data/preprocessing/sentences_Mistral-Small-3.2-24B-Instruct-2506-awq-sym.csv \
 #     --output data/preprocessing/test_set_mistral.csv \
 #     --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
 #     --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
 #     --tokenizer_mode mistral \
-#     --tensor_parallel_size 1
+#     --tensor_parallel_size 1 \
+#     --skip_vllm \
+#     --skip_spacy
 
-## Needs around 2h + 2x3GB + 1xH100
-python3 -u src/preprocessing/paragrapher.py \
-    --input data/preprocessing/informal_economy.csv \
-    --output data/preprocessing/test_set_deepseek.csv \
-    --model Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ \
-    --tokenizer deepseek-ai/DeepSeek-R1-Distill-Qwen-32B \
-    --tensor_parallel_size 1
+### Needs around 4h20 + 2x2GB + 1xH100
+# python3 -u src/preprocessing/paragrapher.py \
+#     --input data/preprocessing/sentences_DeepSeek-R1-Distill-Qwen-32B-AWQ.csv \
+#     --output data/preprocessing/test_set_deepseek.csv \
+#     --model Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ \
+#     --tokenizer deepseek-ai/DeepSeek-R1-Distill-Qwen-32B \
+#     --tensor_parallel_size 1 \
+#     --skip_vllm \
+#     --skip_spacy
 
-#### SECOND TASK: Annotator (need 2x3GB & 1xA5000 & 45 minutes per model)
-# ## Needs around 2h + 2x3GB + 1xA5000
+############# SECOND TASK: Annotator #############
+## Needs around 1h + 2x2GB + 1xA5000
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_llama_annotated.csv \
@@ -73,7 +79,7 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --max_model_len 12288 \
 #     --max_tokens 512
 
-# ## Needs around 5h + 2x3GB + 1xA5000
+# ### Needs around 2h + 2x2GB + 1xA5000
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_mistral_annotated.csv \
@@ -85,7 +91,7 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --max_model_len 12288 \
 #     --max_tokens 512
 
-# ## Needs around 2h + 2x3GB + 1xH100
+## Needs around 2h + 2x2GB + 1xH100
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_deepseek_annotated.csv \
@@ -96,10 +102,10 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --max_model_len 12288 \
 #     --max_tokens 512
 
-# Needs 1GB + 1xCPU
-# python3 -u scripts/setup/calculate_iaa.py \
-#     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_llama_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
-#     --output_dir data/preprocessing/iaa/
+## Needs 1GB + 1xCPU
+python3 -u scripts/setup/calculate_iaa.py \
+    --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_llama_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
+    --output_dir data/preprocessing/iaa/
 
 deactivate
 module purge

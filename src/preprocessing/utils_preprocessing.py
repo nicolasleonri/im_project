@@ -379,7 +379,7 @@ def report_distribution(df: pd.DataFrame, strat_cols: list[str]) -> None:
     """Log stratum sizes for a given stratification."""
     dist = df.groupby(strat_cols)["paragraph_i"].nunique().reset_index()
     dist.columns = strat_cols + ["n_paragraphs"]
-    log.info(f"\nParagraph distribution by {strat_cols}:\n{dist.to_string(index=False)}")
+    log.info(f"Paragraph distribution by {strat_cols}:\n{dist.to_string(index=False)}")
 
 def stratified_sample(
     df: pd.DataFrame,
@@ -448,18 +448,18 @@ def stratified_sample(
         largest = allocations.idxmax()
         allocations[largest] += diff
 
-    log.info(f"\nSample allocation per stratum:\n{allocations.to_string()}")
+    log.info(f"Sample allocation per stratum:\n{allocations.to_string()}")
 
     # --- Sample ---
     sampled_parts = []
+    para_df = para_df.reset_index(drop=True)  # guarantee clean 0..N index
     for stratum_key, n_alloc in allocations.items():
         if isinstance(stratum_key, str):
             stratum_key = (stratum_key,)
-        mask = pd.Series([True] * len(para_df))
+        mask = pd.Series(True, index=para_df.index)  # index-aligned from the start
         for col, val in zip(strat_cols, stratum_key):
             mask &= para_df[col] == val
         stratum_df = para_df[mask]
-
         if len(stratum_df) < n_alloc:
             log.warning(
                 f"Stratum {stratum_key} has only {len(stratum_df)} paragraphs, "
@@ -468,7 +468,6 @@ def stratified_sample(
             sampled = stratum_df.sample(n=n_alloc, replace=True, random_state=seed)
         else:
             sampled = stratum_df.sample(n=n_alloc, replace=False, random_state=seed)
-
         sampled_parts.append(sampled)
 
     sampled_paras = pd.concat(sampled_parts, ignore_index=True)
@@ -483,7 +482,7 @@ def stratified_sample(
     result = df[mask].copy()
 
     log.info(
-        f"\nFinal sample: {len(sampled_paras)} paragraphs, "
+        f"Final sample: {len(sampled_paras)} paragraphs, "
         f"{len(result)} sentence rows."
     )
     return result
@@ -491,11 +490,22 @@ def stratified_sample(
 def clear_gpu_memory():
     """Comprehensive GPU memory cleanup"""
     gc.collect()
+    
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         torch.cuda.synchronize()
         torch.cuda.empty_cache()
+    else:
+        print("⚠️ No GPU available, skipping CUDA cleanup")
+
     if dist.is_initialized():
         dist.destroy_process_group()
     else:
-        print("⚠️ No GPU available, skipping CUDA cleanup")
+        print("⚠️ No distributed process group initialized, skipping dist cleanup")
+
+        
+        
+            
+
+    
+    

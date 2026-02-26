@@ -65,7 +65,7 @@ def parse_llm_response(response_text: str, article_id: str) -> list[str]:
 def extract_paragraphs_llm(
     df: pd.DataFrame,
     model_name: str,
-    batch_size: int = 64,
+    batch_size: int = 64, # adjust based on GPU memory and model size
     temperature: float = 0.0,
     tokenizer: str = None,
     quantization: str = None,
@@ -229,6 +229,10 @@ def parse_args() -> argparse.Namespace:
         help="Skip LLM extraction and load precomputed paragraphs instead."
     )
     parser.add_argument(
+        "--skip_spacy", action="store_true",
+        help="Skip spaCy sentence segmentation and load precomputed sentences instead."
+    )
+    parser.add_argument(
         "--spacy_model", default="es_dep_news_trf",
         help="spaCy model for sentence segmentation (default: es_dep_news_trf)."
     )
@@ -250,9 +254,12 @@ def main():
     args = parse_args()
 
     if args.skip_vllm:
-        log.info("Skipping LLM extraction. Loading precomputed paragraphs from CSV.")
-        para_df = load_input(args.input, skip=True)
-        log.info(f"Loaded {len(para_df)} precomputed paragraph records.")
+        if args.skip_spacy:
+            log.warning("Both --skip_vllm and --skip_spacy are set. No paragraph processing will be performed.")
+        else:
+            log.info("Skipping LLM extraction. Loading precomputed paragraphs from CSV.")
+            para_df = load_input(args.input, skip=True)
+            log.info(f"Loaded {len(para_df)} precomputed paragraph records.")
     else:
         # Step 1: Load input
         df = load_input(args.input, skip=False)
@@ -267,6 +274,9 @@ def main():
             tokenizer_mode=args.tokenizer_mode,
             seed=args.seed,
         )
+        clear_gpu_memory()
+        log.info("GPU memory cleared after LLM inference and sentence segmentation.")
+
         para_df = pd.DataFrame(paragraph_records)
         para_df.to_csv(
             f"data/preprocessing/paragraphs_{args.model.split('/')[-1]}.csv",
@@ -283,31 +293,33 @@ def main():
         )
         log.info(f"Paragraph records saved to data/preprocessing/paragraphs_{args.model.split('/')[-1]}.csv")
 
-    # Steps 4 & 5: Sentence segmentation
-    nlp, model_used = load_spacy_model(
-        preferred=args.spacy_model,
-        fallback_lang=args.udpipe_lang,
-    )
-    log.info(f"Using sentence segmentation model: {model_used}")
-    sentence_records = segment_sentences(para_df.to_dict("records"), nlp)
-    sent_df = pd.DataFrame(sentence_records)
-    sent_df.to_csv(
-            f"data/preprocessing/sentences_{args.model.split('/')[-1]}.csv",
-            index=False,
-            header=True,
-            encoding="utf-8",
-            na_rep='NA',
-            sep=';',
-            quotechar='"',
-            date_format='%Y-%m-%d', # ISO format
-            quoting=csv.QUOTE_ALL,
-            decimal='.', 
-            errors='strict',
+    if args.skip_vllm and args.skip_spacy:
+        log.info("Skipping both LLM and spaCy processing. Loading precomputed sentences from CSV.")
+        sent_df = load_input(args.input, skip=True)
+        log.info(f"Loaded {len(sent_df)} precomputed sentence records.")
+    else:
+        # Steps 4 & 5: Sentence segmentation
+        nlp, model_used = load_spacy_model(
+            preferred=args.spacy_model,
+            fallback_lang=args.udpipe_lang,
         )
-    log.info(f"Sentences records saved to data/preprocessing/sentences_{args.model.split('/')[-1]}.csv")
-
-    clear_gpu_memory()
-    log.info("GPU memory cleared after LLM inference and sentence segmentation.")
+        log.info(f"Using sentence segmentation model: {model_used}")
+        sentence_records = segment_sentences(para_df.to_dict("records"), nlp)
+        sent_df = pd.DataFrame(sentence_records)
+        sent_df.to_csv(
+                f"data/preprocessing/sentences_{args.model.split('/')[-1]}.csv",
+                index=False,
+                header=True,
+                encoding="utf-8",
+                na_rep='NA',
+                sep=';',
+                quotechar='"',
+                date_format='%Y-%m-%d', # ISO format
+                quoting=csv.QUOTE_ALL,
+                decimal='.', 
+                errors='strict',
+            )
+        log.info(f"Sentences records saved to data/preprocessing/sentences_{args.model.split('/')[-1]}.csv")
 
     # Step 6: Stratified sampling (optional)
     if args.no_sample:
