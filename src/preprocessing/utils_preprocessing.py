@@ -21,59 +21,120 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # Constants
-PARAGRAPHER_PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
+PARAGRAPHER_PROMPT = """
+You are a high-precision text structuring system being evaluated for strict rule compliance.
 
-Rules:
-- Extract the paragraphs exactly as they appear in the text, preserving the original wording.
-- A paragraph is a thematically coherent block of text. Short transitional sentences may form their own paragraph.
-- Ignore headers, captions, or metadata that are not part of the article body.
-- Return ONLY a valid JSON object with a single key "paragraphs" containing a list of strings.
-- Do not add explanations, comments or any text outside the JSON.
+This task is part of a benchmark. Any deviation from the rules will be considered a failure.
 
-Example output format:
-{{"paragraphs": ["First paragraph text.", "Second paragraph text."]}}
+The input is a raw, unformatted Peruvian Spanish journalistic article.
+It may not contain explicit paragraph breaks.
+Your task is to reconstruct the intended body paragraphs.
+
+PARAGRAPH RECONSTRUCTION PRINCIPLES:
+- A paragraph is a MAXIMAL coherent block of related sentences.
+- Prefer grouping sentences together rather than splitting them.
+- Only create a new paragraph when there is a clear topic shift, change of speaker, or structural transition.
+- Under NO circumstances should each sentence be treated as its own paragraph unless the article clearly uses single-sentence paragraphs intentionally.
+- When in doubt, group sentences together.
+
+PARAGRAPH VALIDITY:
+- A valid paragraph contains AT LEAST TWO complete sentences.
+- Exception: a single-sentence paragraph is allowed ONLY if it is clearly a lead, a strong closing statement, or an intentional stylistic standalone sentence.
+
+STRICT EXTRACTION RULES:
+1. Preserve the text EXACTLY as written.
+2. Do NOT rewrite, summarize, translate, normalize or correct anything.
+3. Do NOT modify wording.
+4. Do NOT reorder content.
+5. Ignore bylines, captions, metadata and publication details.
+6. The first sentence of the article body is NOT a header — include it in the first paragraph.
+7. Preserve punctuation, accents, quotation marks and spacing exactly as they appear.
+
+ANTI-FRAGMENTATION RULES:
+- If multiple consecutive sentences discuss the same event, actor, or subtopic, they MUST remain in the same paragraph.
+- Consecutive quoted speech attributions from the same speaker MUST stay in the same paragraph.
+
+OUTPUT REQUIREMENTS (MANDATORY):
+- Return ONLY a valid JSON object.
+- The JSON must contain exactly one key: "paragraphs".
+- The value must be a list of strings.
+- Each string must be one reconstructed paragraph.
+- Do NOT include explanations or any text outside the JSON.
+
+If you separate sentences unnecessarily, the evaluation will fail.
+When uncertain, group sentences together rather than splitting them.
+
+Example:
+{{"paragraphs": ["Primer párrafo completo con varias oraciones.", "Segundo párrafo completo."]}}
 
 Article:
-{content}"""
+{content}
+"""
+
+# PARAGRAPHER_PROMPT = """Your task is to identify and extract the paragraphs from the following Peruvian Spanish journalistic article.
+
+# Rules:
+# - Extract the paragraphs exactly as they appear in the text, preserving the original wording.
+# - A paragraph is a thematically coherent block of text that contains AT LEAST TWO sentences, unless the original text has a single-sentence paragraph of clear and explicit structural importance (e.g. a lead sentence or a closing statement).
+# - Ignore headers, captions, or metadata that are not part of the article body.
+# - Return ONLY a valid JSON object with a single key "paragraphs" containing a list of strings.
+# - Do not add explanations, comments or any text outside the JSON.
+
+# Example output format:
+# {{"paragraphs": ["First paragraph text.", "Second paragraph text."]}}
+
+# Article:
+# {content}"""
 
 VALID_BINARY = {"argumentative", "non-argumentative"}
 VALID_COMPONENT = {"claim", "premise", "none"}
 DECISION_TREE = """
-DECISION TREE FOR ANNOTATION (apply step by step):
+ÁRBOL DE DECISIÓN PARA LA ANOTACIÓN (aplicar estrictamente en orden):
 
-1. Is the sentence argumentative in its local context?
-   → NO:  label = none. STOP.
-   → YES: continue to step 2.
+1. ¿La oración cumple una función argumentativa en su contexto local inmediato?
+   → NO: label_binary = non-argumentative y label_component = none. STOP.
+   → SÍ: continuar al paso 2.
 
-2. Does the sentence primarily SUPPORT another segment?
-   → YES: continue to step 3.
-   → NO:  continue to step 5.
+2. ¿La oración principalmente APOYA otra oración del contexto?
+   → SÍ: continuar al paso 3.
+   → NO: continuar al paso 5.
 
-3. Can it answer the question "Why?" relative to another segment?
-   → YES: label = premise. STOP.
-   → NO:  continue to step 4.
+3. ¿Puede responder naturalmente a la pregunta "¿Por qué?" respecto a otra oración?
+   → SÍ: label_binary = argumentative y label_component = premise. STOP.
+   → NO: continuar al paso 4.
 
-4. Does it provide evidence, data, example, causal explanation, or authority reference?
-   → YES: label = premise. STOP.
-   → NO:  label = none. STOP.
+4. ¿Aporta evidencia, datos, ejemplo, explicación causal o referencia a autoridad?
+   → SÍ: label_binary = argumentative y label_component = premise. STOP.
+   → NO: label_binary = non-argumentative y label_component = none. STOP.
 
-5. Does the sentence express a standpoint that could reasonably be challenged?
-   → YES: label = claim. STOP.
-   → NO:  continue to step 6.
+5. ¿La oración expresa un punto de vista que podría ser razonablemente cuestionado?
+   → NO: label_binary = non-argumentative y label_component = none. STOP.
+   → SÍ: continuar al paso 6.
 
-6. Is it framed as a conclusion (e.g., "por lo tanto", "en consecuencia", "por ende")?
-   → YES: label = claim. STOP.
-   → NO:  continue to step 7.
+6. ¿Está formulada como conclusión (por ejemplo: "por lo tanto", "en consecuencia", "por ende")?
+   → SÍ: label_binary = argumentative y label_component = claim. STOP.
+   → NO: continuar al paso 7.
 
-7. Is it reported speech expressing an evaluative or diagnostic position?
-   → YES: label = claim. STOP.
-   → NO:  continue to step 8.
+7. ¿Es discurso reportado que expresa una posición evaluativa o diagnóstica?
+   → SÍ: label_binary = argumentative y label_component = claim. STOP.
+   → NO: continuar al paso 8.
 
-8. Does its argumentative role require more than minimal local reconstruction?
-   → YES: label = none. STOP.
-   → NO:  label = claim. STOP.
+8. Si expresa un punto de vista defendible dentro del contexto local (sin requerir reconstrucción global):
+   → SÍ: label_binary = argumentative y label_component = claim. STOP.
+   → NO: label_binary = non-argumentative y label_component = none. STOP.
+
+Nota de coherencia:
+Si label_component es "claim" o "premise", entonces label_binary debe ser necesariamente "argumentative".
 """
-ANNOTATION_PROMPT = """## Guías de anotación
+
+ANNOTATION_PROMPT = """
+You are an expert argumentation annotator being evaluated for strict adherence to formal annotation guidelines.
+
+This task is part of a controlled benchmark. Any deviation from the guidelines, label constraints, or output format will be considered an error.
+
+---
+
+## Guías de anotación
 {guidelines}
 
 ---
@@ -96,20 +157,35 @@ ANNOTATION_PROMPT = """## Guías de anotación
 
 ## Tarea
 
-Anota la siguiente oración (marcada con >> <<) siguiendo las guías de anotación.
+Anota la siguiente oración (marcada con >> <<) siguiendo estrictamente las guías de anotación.
 
 Párrafo con oración marcada:
 {annotated_paragraph}
 
 ---
 
-## Árbol de decisión
-Aplica los siguientes pasos en orden para determinar la etiqueta:
+## Árbol de decisión (OBLIGATORIO)
+
+Aplica los siguientes pasos EN ORDEN.  
+No omitas pasos.  
+No uses intuición global.  
+La decisión debe basarse únicamente en el contexto local disponible.
+
 {decision_tree}
 
 ---
 
-## Instrucciones de output
+## Criterios operativos obligatorios
+
+- La anotación se realiza a nivel de oración individual.
+- Evalúa la FUNCIÓN argumentativa, no la forma gramatical.
+- Solo se permite reconstrucción mínima si la inferencia está fuertemente respaldada por el contexto inmediato.
+- No infieras la tesis global del autor.
+- Si la función argumentativa no puede determinarse razonablemente desde el contexto local, etiqueta como "non-argumentative".
+
+---
+
+## Instrucciones de output (FORMATO ESTRICTO)
 
 Responde ÚNICAMENTE con un objeto JSON válido con exactamente estas claves:
 
@@ -117,15 +193,25 @@ Responde ÚNICAMENTE con un objeto JSON válido con exactamente estas claves:
 - "label_component": "claim", "premise" o "none"
 - "confidence_binary": número entre 0.0 y 1.0
 - "confidence_component": número entre 0.0 y 1.0
-- "reasoning": justificación breve en español (máximo 2 oraciones) basada en las guías
+- "reasoning": justificación breve en español (máximo 2 oraciones) basada explícitamente en las guías
 
-Restricciones:
-- Si label_binary es "non-argumentative", label_component debe ser "none".
-- No uses valores fuera de los permitidos para label_binary y label_component.
+Restricciones obligatorias:
+- Si "label_binary" es "non-argumentative", entonces "label_component" debe ser "none".
+- No uses valores distintos a los permitidos.
 - No añadas texto fuera del JSON.
+- No incluyas explicaciones adicionales.
+- El JSON debe ser estrictamente válido.
+
+Calibración de confianza:
+- >0.85 solo si la función es claramente inequívoca según las guías.
+- 0.60–0.85 si existe leve ambigüedad contextual.
+- <0.60 si la decisión depende de inferencia limitada o ambigüedad significativa.
+
+Si violas el formato o las restricciones, la evaluación fallará.
 
 Ejemplo de output válido:
-{{"label_binary": "argumentative", "label_component": "claim", "confidence_binary": 0.91, "confidence_component": 0.85, "reasoning": "La oración expresa una posición evaluativa sobre la política de formalización que podría ser cuestionada."}}"""
+{{"label_binary": "argumentative", "label_component": "claim", "confidence_binary": 0.91, "confidence_component": 0.85, "reasoning": "La oración expresa un juicio evaluativo que puede ser cuestionado, cumpliendo el Challenge Test."}}
+"""
 
 # Functions
 def load_input(path: str, skip: bool = False) -> pd.DataFrame:
@@ -297,27 +383,44 @@ def report_distribution(df: pd.DataFrame, strat_cols: list[str]) -> None:
 
 def stratified_sample(
     df: pd.DataFrame,
-    n_samples: int,
+    n_samples: int = 600,
     min_stratum_size: int = 10,
+    min_sentences: int = 2,
+    seed: int = 42,
 ) -> pd.DataFrame:
     """
     Sample n_samples paragraphs with stratification.
 
     Strategy:
-        1. Try stratification by newspaper + year.
-        2. If any stratum has fewer than min_stratum_size paragraphs,
+        1. Filter out paragraphs with fewer than min_sentences detected sentences.
+        2. Try stratification by newspaper + year.
+        3. If any stratum has fewer than min_stratum_size paragraphs,
            fall back to stratification by newspaper only.
-        3. Allocate samples proportionally to stratum size.
-        4. Report final distribution.
+        4. Allocate samples proportionally to stratum size.
+        5. Report final distribution.
 
     Sampling is at the paragraph level (one row per paragraph,
     all sentences of sampled paragraphs are included).
     """
-    # Work at paragraph level (unique paragraph per article)
+    # Work at paragraph level — count sentences per paragraph first
     para_df = (
         df.groupby(["article_id", "paragraph_i"])
-        .first()
-        .reset_index()[["article_id", "newspaper", "year", "paragraph_i", "paragraph_text"]]
+        .agg(
+            newspaper=("newspaper", "first"),
+            year=("year", "first"),
+            paragraph_text=("paragraph_text", "first"),
+            n_sentences=("sentence_j", "count"),
+        )
+        .reset_index()
+    )
+
+    # --- Filter: keep only paragraphs with at least min_sentences ---
+    before = len(para_df)
+    para_df = para_df[para_df["n_sentences"] >= min_sentences].copy()
+    dropped = before - len(para_df)
+    log.info(
+        f"Paragraph filter: kept {len(para_df)}/{before} paragraphs "
+        f"with >= {min_sentences} sentences ({dropped} dropped)."
     )
 
     # --- Attempt 1: stratify by newspaper + year ---
@@ -342,7 +445,6 @@ def stratified_sample(
     # Adjust rounding errors to hit exactly n_samples
     diff = n_samples - allocations.sum()
     if diff != 0:
-        # Add/subtract from largest stratum
         largest = allocations.idxmax()
         allocations[largest] += diff
 
@@ -363,9 +465,9 @@ def stratified_sample(
                 f"Stratum {stratum_key} has only {len(stratum_df)} paragraphs, "
                 f"requested {n_alloc}. Sampling with replacement."
             )
-            sampled = stratum_df.sample(n=n_alloc, replace=True, random_state=42)
+            sampled = stratum_df.sample(n=n_alloc, replace=True, random_state=seed)
         else:
-            sampled = stratum_df.sample(n=n_alloc, replace=False, random_state=42)
+            sampled = stratum_df.sample(n=n_alloc, replace=False, random_state=seed)
 
         sampled_parts.append(sampled)
 

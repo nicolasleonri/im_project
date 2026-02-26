@@ -71,6 +71,7 @@ def extract_paragraphs_llm(
     quantization: str = None,
     tensor_parallel_size: int = 1,
     tokenizer_mode: str = "auto",
+    seed: int = 42,
 ) -> list[dict]:
     """
     Use vLLM to extract paragraphs from each article.
@@ -86,7 +87,7 @@ def extract_paragraphs_llm(
         tokenizer=tokenizer if tokenizer else model_name,
         tokenizer_mode=tokenizer_mode,
         tensor_parallel_size=tensor_parallel_size,
-        max_model_len=8192,
+        max_model_len=16384, # allow long inputs
         gpu_memory_utilization=0.90,
         limit_mm_per_prompt={"image": 0},  # disable vision
         # enforce_eager=True,   # disable CUDA graphs
@@ -94,8 +95,8 @@ def extract_paragraphs_llm(
     
     sampling_params = SamplingParams(
         temperature=temperature,
-        max_tokens=4096,
-        seed=42,
+        max_tokens=8192, # allow long outputs
+        seed=seed,
     )
 
     prompts = build_paragrapher_prompts(df, model_name)
@@ -145,7 +146,14 @@ def segment_sentences(records: list[dict], nlp) -> list[dict]:
     """
     log.info("Segmenting paragraphs into sentences...")
     sentence_records = []
+
+    # Drop records with empty paragraph text
+    original_len = len(records)
+    records = [r for r in records if isinstance(r["paragraph_text"], str) and r["paragraph_text"].strip()]
     paragraph_texts = [r["paragraph_text"] for r in records]
+    if len(records) < original_len:
+        log.warning(f"Dropped {original_len - len(records)} records with empty/NaN paragraph_text.")
+
     n_fallback = 0
 
     for record, doc in tqdm(
@@ -156,7 +164,8 @@ def segment_sentences(records: list[dict], nlp) -> list[dict]:
         sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
 
         # Fallback: UDPipe/spaCy returned single sentence equal to full paragraph
-        if len(sentences) == 1 and sentences[0] == record["paragraph_text"].strip():
+        para_text = record["paragraph_text"] if isinstance(record["paragraph_text"], str) else ""
+        if len(sentences) == 1 and sentences[0] == para_text.strip():
             sentences = split_sentences_fallback(record["paragraph_text"])
             n_fallback += 1
 
@@ -208,8 +217,8 @@ def parse_args() -> argparse.Namespace:
         help="Tokenizer mode for vLLM (default: auto)."
     )
     parser.add_argument(
-        "--min_stratum_size", type=int, default=10,
-        help="Minimum paragraphs per stratum before falling back (default: 10)."
+        "--min_stratum_size", type=int, default=5,
+        help="Minimum paragraphs per stratum before falling back (default: 5)."
     )
     parser.add_argument(
         "--no_sample", action="store_true",
@@ -220,12 +229,20 @@ def parse_args() -> argparse.Namespace:
         help="Skip LLM extraction and load precomputed paragraphs instead."
     )
     parser.add_argument(
-    "--spacy_model", default="es_dep_news_trf",
-    help="spaCy model for sentence segmentation (default: es_dep_news_trf)."
+        "--spacy_model", default="es_dep_news_trf",
+        help="spaCy model for sentence segmentation (default: es_dep_news_trf)."
     )
     parser.add_argument(
         "--udpipe_lang", default="es",
         help="Fallback spacy_udpipe language code (default: es)."
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42, 
+        help="Random seed for reproducibility (default: 42)."
+    )
+    parser.add_argument(
+        "--min_sentences", type=int, default=2, 
+        help="Minimum sentences per paragraph to include in sample (default: 2)."
     )
     return parser.parse_args()
 
@@ -248,6 +265,7 @@ def main():
             tokenizer=args.tokenizer,
             quantization=args.quantization,
             tokenizer_mode=args.tokenizer_mode,
+            seed=args.seed,
         )
         para_df = pd.DataFrame(paragraph_records)
         para_df.to_csv(
@@ -300,6 +318,8 @@ def main():
             sent_df,
             n_samples=args.n_samples,
             min_stratum_size=args.min_stratum_size,
+            min_sentences=args.min_sentences,
+            seed=args.seed,
         )
 
     # Reorder columns for output

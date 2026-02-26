@@ -3,14 +3,14 @@
 #SBATCH --output=logs/preprocessing/slurm/preprocessing_paragrapher_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
-#SBATCH --qos=prio
+#SBATCH --qos=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
 #SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=2G
+#SBATCH --mem-per-cpu=3G
 #SBATCH --gres=gpu:h100:1
-#SBATCH --time=05:00:00
+#SBATCH --time=10:00:00
 
 # Load necessary modules
 module purge
@@ -35,16 +35,34 @@ export TORCH_NCCL_ASYNC_ERROR_HANDLING=0
 source venv/preprocessing/bin/activate
 
 echo "Setup done. Running python script..."
-#### FIRST TASK: Paragrapher + Sentence Splitter (needs 2x2GB & 1xH100 & 5 hours per model)
+#### FIRST TASK: Paragrapher + Sentence Splitter
+# ## Needs around 2h + 2x3GB + 1xA5000
+# python3 -u src/preprocessing/paragrapher.py \
+#     --input data/preprocessing/informal_economy.csv \
+#     --output data/preprocessing/test_set_llama.csv \
+#     --model Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit \
+#     --tokenizer meta-llama/Llama-3.1-8B-Instruct \
+#     --tensor_parallel_size 1
+
+# ## Needs around 5h + 2x3GB + 1xA5000
+# python3 -u src/preprocessing/paragrapher.py \
+#     --input data/preprocessing/informal_economy.csv \
+#     --output data/preprocessing/test_set_mistral.csv \
+#     --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
+#     --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
+#     --tokenizer_mode mistral \
+#     --tensor_parallel_size 1
+
+## Needs around 2h + 2x3GB + 1xH100
 python3 -u src/preprocessing/paragrapher.py \
     --input data/preprocessing/informal_economy.csv \
-    --output data/preprocessing/test_set_mistral.csv \
-    --model jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym \
-    --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
-    --tokenizer_mode mistral \
+    --output data/preprocessing/test_set_deepseek.csv \
+    --model Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ \
+    --tokenizer deepseek-ai/DeepSeek-R1-Distill-Qwen-32B \
     --tensor_parallel_size 1
 
 #### SECOND TASK: Annotator (need 2x3GB & 1xA5000 & 45 minutes per model)
+# ## Needs around 2h + 2x3GB + 1xA5000
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_llama_annotated.csv \
@@ -53,8 +71,9 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --tokenizer meta-llama/Llama-3.1-8B-Instruct \
 #     --tensor_parallel_size 1 \
 #     --max_model_len 12288 \
-#     --max_tokens 512 \
+#     --max_tokens 512
 
+# ## Needs around 5h + 2x3GB + 1xA5000
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_mistral_annotated.csv \
@@ -64,8 +83,9 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --tokenizer_mode mistral \
 #     --tensor_parallel_size 1 \
 #     --max_model_len 12288 \
-#     --max_tokens 512 \
+#     --max_tokens 512
 
+# ## Needs around 2h + 2x3GB + 1xH100
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_deepseek_annotated.csv \
@@ -74,8 +94,15 @@ python3 -u src/preprocessing/paragrapher.py \
 #     --tokenizer deepseek-ai/DeepSeek-R1-Distill-Qwen-32B \
 #     --tensor_parallel_size 1 \
 #     --max_model_len 12288 \
-#     --max_tokens 512 \
+#     --max_tokens 512
+
+# Needs 1GB + 1xCPU
+# python3 -u scripts/setup/calculate_iaa.py \
+#     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_llama_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
+#     --output_dir data/preprocessing/iaa/
 
 deactivate
 module purge
 echo "Script finished"
+
+# sbatch --dependency=afterok:JOBID preprocessing.bash
