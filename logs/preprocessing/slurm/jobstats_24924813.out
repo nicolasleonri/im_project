@@ -1,0 +1,44 @@
+
+================================================================================
+                              Slurm Job Statistics                              
+================================================================================
+         Job ID: 24924813
+   User/Account: nicolasal97/agfritz
+       Job Name: preprocessing_annotator
+          State: COMPLETED
+          Nodes: 1
+      CPU Cores: 2
+     CPU Memory: 4GB (2GB per CPU-core)
+           GPUs: 1
+  QOS/Partition: standard/scavenger
+        Cluster: curta
+     Start Time: Thu Feb 26, 2026 at 5:30 PM
+       Run Time: 02:43:35
+     Time Limit: 03:00:00
+
+                              Overall Utilization                               
+================================================================================
+  CPU utilization  [|||||||||||||                                  26%]
+  CPU memory usage [|||||||||||||||||||||||||||||||||||||||||||||||95%]
+  GPU utilization  [|||||||||||||||||||||||||                      51%]
+  GPU memory usage [|||||||||||||||||||||||||||||||||||||||||||||||98%]
+
+                              Detailed Utilization                              
+================================================================================
+  CPU utilization per node (CPU time used/run time)
+      g011.curta.zedat.fu-berlin.de: 01:26:29/05:27:10 (efficiency=26.4%)
+
+  CPU memory usage per node - used/allocated
+      g011.curta.zedat.fu-berlin.de: 3.8GB/4GB (1.9GB/2GB per core of 2)
+
+  GPU utilization per node
+      g011.curta.zedat.fu-berlin.de (GPU 1): 50.6%
+
+  GPU memory usage per node - maximum used/total
+      g011.curta.zedat.fu-berlin.de (GPU 1): 23.5GB/24GB (98.1%)
+
+                                     Notes                                      
+================================================================================
+  * Have a nice day!
+
+

@@ -114,6 +114,7 @@ def annotate_sentences(
     temperature: float = 0.0,
     max_tokens: int = 512,
     max_model_len: int = 32768,
+    top_p: float = 1.0,
 ) -> pd.DataFrame:
     """
     Annotate all sentences in df using vLLM.
@@ -135,6 +136,7 @@ def annotate_sentences(
         temperature=temperature,
         max_tokens=max_tokens,
         seed=42,
+        top_p=top_p,
     )
 
     log.info(f"Building annotation prompts for {len(df)} sentences...")
@@ -222,6 +224,10 @@ def parse_args() -> argparse.Namespace:
         "--temperature", type=float, default=0.0,
         help="Sampling temperature (default: 0.0)."
     )
+    parser.add_argument(
+        "--top_p", type=float, default=1.0,
+        help="Sampling top_p (default: 1.0)."
+    )
     return parser.parse_args()
 
 
@@ -255,6 +261,7 @@ def main():
         temperature=args.temperature,
         max_tokens=args.max_tokens,
         max_model_len=args.max_model_len,
+        top_p=args.top_p,
     )
 
     clear_gpu_memory()

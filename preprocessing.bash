@@ -91,7 +91,7 @@ echo "Setup done. Running python script..."
 #     --max_model_len 12288 \
 #     --max_tokens 512
 
-## Needs around 2h + 2x2GB + 1xH100
+## Needs around 1h + 2x2GB + 1xH100
 # python3 -u src/preprocessing/annotator.py \
 #     --input data/preprocessing/test_set_mistral.csv \
 #     --output data/preprocessing/test_set_deepseek_annotated.csv \
@@ -102,7 +102,21 @@ echo "Setup done. Running python script..."
 #     --max_model_len 12288 \
 #     --max_tokens 512
 
-## Needs 1GB + 1xCPU
+### Needs around 2h + 2x2GB + 1xA5000
+# python3 -u src/preprocessing/annotator.py \
+#     --input data/preprocessing/test_set_mistral.csv \
+#     --output data/preprocessing/test_set_magistral_annotated.csv \
+#     --guidelines data/preprocessing/annotation_guidelines_v1.md \
+#     --model mistralai/Magistral-Small-2506_gguf \
+#     --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
+#     --tokenizer_mode mistral \
+#     --tensor_parallel_size 1 \
+#     --max_model_len 40960 \
+#     --max_tokens 2048 \
+#     --temperature 0.7 \
+#     --top_p 0.95
+
+## Needs around 15 secs + 1x1GB + 1xCPU
 python3 -u scripts/setup/calculate_iaa.py \
     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_llama_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
     --output_dir data/preprocessing/iaa/

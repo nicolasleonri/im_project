@@ -1,0 +1,9 @@
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Downloading 'Magistral-Small-2506.gguf' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/64922b03b69e02ae2eab9668761986c93b41ea65bdeaa36c951e22c9fd30779a.incomplete'
+Downloading 'README.md' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/c2e9996032ecc4529d92ff29897b7b6fbaa0fb77.incomplete'
+Downloading 'SYSTEM_PROMPT.txt' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/4b33120a3d4835adc07a33c2caccc2400ba01052.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/c2e9996032ecc4529d92ff29897b7b6fbaa0fb77
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/4b33120a3d4835adc07a33c2caccc2400ba01052
+Downloading 'Magistral-Small-2506_Q8_0.gguf' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/6c7e8eec28de36f086274875e08a06db6b45ae257f96f35cdcfd8f86f3fae9af.incomplete'
+Downloading '.gitattributes' to '/scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/68a336775770be7dc40ca362705a1f733e41f3d6.incomplete'
+Download complete. Moving file to /scratch/nicolasal97/.cache/huggingface/hub/models--mistralai--Magistral-Small-2506_gguf/blobs/68a336775770be7dc40ca362705a1f733e41f3d6
+Fetching 5 files:  20%|██        | 1/5 [00:04<00:18,  4.61s/it]

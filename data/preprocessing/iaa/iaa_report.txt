@@ -1,0 +1,48 @@
+======================================================================
+  INTER-ANNOTATOR AGREEMENT REPORT
+======================================================================
+
+Models compared  : test_set_mistral_annotated, test_set_llama_annotated, test_set_deepseek_annotated
+Total sentences  : 3846
+  → agreed       :   1376  (35.8%)  auto-labeled
+  → review       :   2407  (62.6%)  needs manual labels
+  → errors (NC)  :     63  (1.6%)  needs manual labels
+
+  ⚠  63 sentences contain NC labels. They are included in the metrics
+     below as a separate 'nc' category, which may deflate agreement scores.
+
+----------------------------------------------------------------------
+  Label: label_binary
+----------------------------------------------------------------------
+  Fleiss' Kappa        : 0.2871  [Fair]
+  Krippendorff's Alpha : 0.2977  [Fair]
+
+  Pairwise Cohen's Kappa:
+    test_set_mistral_annotated     vs test_set_llama_annotated        κ = 0.3691  [Fair]
+    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3727  [Fair]
+    test_set_llama_annotated       vs test_set_deepseek_annotated     κ = 0.2167  [Fair]
+
+----------------------------------------------------------------------
+  Label: label_component
+----------------------------------------------------------------------
+  Fleiss' Kappa        : 0.2975  [Fair]
+  Krippendorff's Alpha : 0.3036  [Fair]
+
+  Pairwise Cohen's Kappa:
+    test_set_mistral_annotated     vs test_set_llama_annotated        κ = 0.3311  [Fair]
+    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3698  [Fair]
+    test_set_llama_annotated       vs test_set_deepseek_annotated     κ = 0.2319  [Fair]
+
+======================================================================
+  Kappa interpretation (Landis & Koch 1977):
+    < 0.00  Poor  |  0.00–0.20  Slight  |  0.21–0.40  Fair
+    0.41–0.60  Moderate  |  0.61–0.80  Substantial  |  0.81–1.00  Almost Perfect
+======================================================================
+
+  Next steps:
+    1. Open review_sentences.csv — fill label_binary_final and
+       label_component_final for every PENDING row.
+    2. Open errors.csv — do the same.
+    3. Run build_test_set.py to merge all three CSVs into
+       test_set_final.csv.
+======================================================================
