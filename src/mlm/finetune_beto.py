@@ -305,11 +305,16 @@ def main(args):
     train_labels = (
         train_df[label_col].str.strip().str.lower().map(label_map).dropna().astype(int)
     )
-    class_weights = compute_class_weight(
+    present_classes = np.sort(train_labels.unique())
+    raw_weights = compute_class_weight(
         class_weight="balanced",
-        classes=np.arange(num_labels),
+        classes=present_classes,
         y=train_labels,
     )
+    # Build full weight array — classes missing from train get weight 1.0
+    class_weights = np.ones(num_labels)
+    for cls, w in zip(present_classes, raw_weights):
+        class_weights[cls] = w
     log.info(f"  Class weights: { {id2label[i]: round(w, 3) for i, w in enumerate(class_weights)} }")
 
     # ── Load tokenizer ────────────────────────────────────────────────────
@@ -353,7 +358,7 @@ def main(args):
         args=base_training_args,
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=data_collator,
         compute_metrics=build_compute_metrics(label_map),
     )
@@ -412,7 +417,7 @@ def main(args):
         args=final_training_args,
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=data_collator,
         compute_metrics=build_compute_metrics(label_map),
     )

@@ -35,22 +35,22 @@ echo "Setup done. Running python script..."
 
 ###### SECOND TASK: PRETRAIN BETO #######
 ## Needs 1x5GB, 1xH100 and around 1 hour
-python3 -u src/mlm/pretrain_beto.py \
-    --corpus_file data/mlm/corpus_clean.txt \
-    --output_dir /scratch/nicolasal97/im_project/beto-cgec \
-    --per_device_train_batch_size 64 \
-    --bf16
+# python3 -u src/mlm/pretrain_beto.py \
+#     --corpus_file data/mlm/corpus_clean.txt \
+#     --output_dir /scratch/nicolasal97/im_project/beto-cgec \
+#     --per_device_train_batch_size 64 \
+#     --bf16
 
 ##### THIRD TASK: EVALUATE BETO #######
 ## Needs 1x5GB, 1xH100 and around 30 minutes
-# python finetune_beto.py \
-#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-#     --source_dataset data/preprocessing/datasetsfurman_2023.csv \
-#     --test_dataset data/test_set/test_set_final.csv \
-#     --task binary \
-#     --output_dir results/beto-base_guzman_binary \
-#     --n_trials 20 \
-#     --bf16
+python -u src/mlm/finetune_beto.py \
+    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+    --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task binary \
+    --output_dir results/beto-base_guzman_binary \
+    --n_trials 20 \
+    --bf16
 
 deactivate
 module purge

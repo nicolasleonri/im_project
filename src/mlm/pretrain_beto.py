@@ -53,6 +53,7 @@ MAX_SEQ_LENGTH  = 512       # BERT max — use full context
 MLM_PROBABILITY = 0.15      # Standard masking probability
 SEED            = 42
 
+
 # ─────────────────────────────────────────────
 # Tokenization
 # ─────────────────────────────────────────────
@@ -136,7 +137,20 @@ def main(args):
     log.info(f"Corpus lines loaded: {len(raw_dataset):,}")
 
     # ── Tokenize and chunk ────────────────────────────────────────────────
-    train_dataset = tokenize_and_group(raw_dataset, tokenizer, MAX_SEQ_LENGTH)
+    # Tokenization is expensive — cache to disk so it only runs once.
+    cache_path = os.path.join(os.path.dirname(args.corpus_file), "tokenized_cache")
+
+    if os.path.exists(cache_path):
+        log.info(f"Loading tokenized dataset from cache: {cache_path}")
+        from datasets import load_from_disk
+        train_dataset = load_from_disk(cache_path)
+        log.info(f"Loaded {len(train_dataset):,} chunks from cache.")
+    else:
+        log.info("Tokenizing corpus (this may take a while)...")
+        train_dataset = tokenize_and_group(raw_dataset, tokenizer, MAX_SEQ_LENGTH)
+        log.info(f"Saving tokenized dataset to cache: {cache_path}")
+        train_dataset.save_to_disk(cache_path)
+        log.info("Cache saved — next run will skip tokenization.")
 
     # ── Data collator (Whole Word Masking) ────────────────────────────────
     # Consistent with original BETO pre-training
