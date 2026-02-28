@@ -7,10 +7,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=5G
-#SBATCH --gres=gpu:h100:1
-#SBATCH --time=02:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=1G
+#alternative SBATCH --gres=gpu:h100:1
+#SBATCH --time=00:00:30
 
 # Load necessary modules
 module purge
@@ -117,21 +117,21 @@ echo "Setup done. Running python script..."
 #     --top_p 0.95
 
 ## Needs around 2h + 2x2GB + 1xH100
-python3 -u src/preprocessing/annotator.py \
-    --input data/preprocessing/test_set_mistral.csv \
-    --output data/preprocessing/test_set_magistral_annotated.csv \
-    --guidelines data/preprocessing/annotation_guidelines_v1.md \
-    --model unsloth/Magistral-Small-2506-unsloth-bnb-4bit \
-    --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
-    --tokenizer_mode mistral \
-    --tensor_parallel_size 1 \
-    --max_model_len 40960 \
-    --max_tokens 2048 \
-    --temperature 0.7 \
-    --top_p 0.95
+# python3 -u src/preprocessing/annotator.py \
+#     --input data/preprocessing/test_set_mistral.csv \
+#     --output data/preprocessing/test_set_magistral_annotated.csv \
+#     --guidelines data/preprocessing/annotation_guidelines_v1.md \
+#     --model unsloth/Magistral-Small-2506-unsloth-bnb-4bit \
+#     --tokenizer mistralai/Mistral-Small-3.2-24B-Instruct-2506 \
+#     --tokenizer_mode mistral \
+#     --tensor_parallel_size 1 \
+#     --max_model_len 40960 \
+#     --max_tokens 2048 \
+#     --temperature 0.7 \
+#     --top_p 0.95
 
 ## Needs around 15 secs + 1x1GB + 1xCPU
-python3 -u scripts/setup/calculate_iaa.py \
+python3 -u scripts/preprocessing/calculate_iaa.py \
     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_llama_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv data/preprocessing/test_set_magistral_annotated.csv \
     --output_dir data/preprocessing/iaa/
 
