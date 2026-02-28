@@ -7,8 +7,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=3
-#SBATCH --mem-per-cpu=10G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=8G
 #SBATCH --gres=gpu:h100:1
 #SBATCH --time=01:00:00
 
@@ -34,23 +34,112 @@ echo "Setup done. Running python script..."
 #     --output_file data/mlm/corpus_clean.txt
 
 ###### SECOND TASK: PRETRAIN BETO #######
-## Needs 1x5GB, 1xH100 and around 1 hour
-# python3 -u src/mlm/pretrain_beto.py \
-#     --corpus_file data/mlm/corpus_clean.txt \
-#     --output_dir /scratch/nicolasal97/im_project/beto-cgec \
-#     --per_device_train_batch_size 64 \
-#     --bf16
+python3 -u src/mlm/pretrain_beto.py \
+    --corpus_file data/mlm/corpus_clean.txt \
+    --output_dir /scratch/nicolasal97/im_project/beto-cgec \
+    --per_device_train_batch_size 64 \
+    --bf16
 
 ##### THIRD TASK: EVALUATE BETO #######
-## Needs 1x5GB, 1xH100 and around 30 minutes
-python -u src/mlm/finetune_beto.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task binary \
-    --output_dir results/beto-base_guzman_binary \
-    --n_trials 20 \
-    --bf16
+## Needs 1x2GB, 1xH100 and around 5 minutes per task
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_gorrostieta_lopezlopez_2019_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_gorrostieta_lopezlopez_2019_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_guzman_monteza_2023_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/kovatchev_taule_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_kovatchev_taule_2022_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/kovatchev_taule_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_kovatchev_taule_2022_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2021.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_ruizdolz_2021_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2021.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_ruizdolz_2021_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2024.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_ruizdolz_2024_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/segura_tinoco_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_segura_tinoco_2022_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/mlm/finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/yeginbergen_2024.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_yeginbergen_2024_component \
+#     --n_trials 20 \
+#     --bf16
 
 deactivate
 module purge

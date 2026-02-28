@@ -31,7 +31,7 @@ from datasets import load_dataset
 from transformers import (
     AutoTokenizer,
     AutoModelForMaskedLM,
-    DataCollatorForWholeWordMask,
+    DataCollatorForLanguageModeling,
     TrainingArguments,
     Trainer,
     set_seed,
@@ -154,10 +154,12 @@ def main(args):
 
     # ── Data collator (Whole Word Masking) ────────────────────────────────
     # Consistent with original BETO pre-training
-    data_collator = DataCollatorForWholeWordMask(
-        tokenizer=tokenizer,
+    data_collator = DataCollatorForLanguageModeling(
+        processing_class=tokenizer,
         mlm=True,
         mlm_probability=MLM_PROBABILITY,
+        pad_to_multiple_of=8,
+        whole_word_mask=True,
     )
 
     # ── Training arguments ────────────────────────────────────────────────
@@ -175,7 +177,7 @@ def main(args):
         # Optimizer
         learning_rate=5e-5,             # Lower LR for continued pre-training
         weight_decay=0.01,
-        warmup_ratio=0.06,              # 6% warmup — standard for BERT continued pre-training
+        warmup_steps=500,              # 6% warmup — standard for BERT continued pre-training
         lr_scheduler_type="linear",
 
         # Precision
@@ -183,7 +185,7 @@ def main(args):
         bf16=args.bf16,                 # Prefer bf16 on H100
 
         # Logging and saving
-        logging_dir=os.path.join(args.output_dir, "logs"),
+        # logging_dir removed (use TENSORBOARD_LOGGING_DIR env var)
         logging_steps=500,
         save_steps=5000,
         save_total_limit=3,             # Keep only last 3 checkpoints
@@ -194,7 +196,7 @@ def main(args):
 
         # Performance
         dataloader_num_workers=4,
-        group_by_length=True,           # Reduces padding within batches
+        # group_by_length removed in newer transformers versions
         report_to="none",               # Change to "wandb" if you use W&B
     )
 
@@ -203,7 +205,7 @@ def main(args):
         model=model,
         args=training_args,
         train_dataset=train_dataset,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=data_collator,
     )
 
