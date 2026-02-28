@@ -7,8 +7,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=5G
+#SBATCH --cpus-per-task=3
+#SBATCH --mem-per-cpu=10G
 #SBATCH --gres=gpu:h100:1
 #SBATCH --time=01:00:00
 
@@ -20,6 +20,8 @@ module load virtualenv/20.26.2-GCCcore-13.3.0
 
 # Environment variables
 export HF_HOME=/scratch/nicolasal97/.cache/huggingface
+export TRANSFORMERS_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
 
 # Activate virtual environment
 source venv/mlm/bin/activate
@@ -38,6 +40,17 @@ python3 -u src/mlm/pretrain_beto.py \
     --output_dir /scratch/nicolasal97/im_project/beto-cgec \
     --per_device_train_batch_size 64 \
     --bf16
+
+##### THIRD TASK: EVALUATE BETO #######
+## Needs 1x5GB, 1xH100 and around 30 minutes
+# python finetune_beto.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasetsfurman_2023.csv \
+#     --test_dataset data/test_set/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_guzman_binary \
+#     --n_trials 20 \
+#     --bf16
 
 deactivate
 module purge
