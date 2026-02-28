@@ -8,8 +8,8 @@
 #SBATCH --ntasks=1
 
 #SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=2G
-#SBATCH --gres=gpu:a5000:1
+#SBATCH --mem-per-cpu=5G
+#SBATCH --gres=gpu:h100:1
 #SBATCH --time=02:00:00
 
 # Load necessary modules
@@ -116,6 +116,7 @@ echo "Setup done. Running python script..."
 #     --temperature 0.7 \
 #     --top_p 0.95
 
+## Needs around 2h + 2x2GB + 1xH100
 python3 -u src/preprocessing/annotator.py \
     --input data/preprocessing/test_set_mistral.csv \
     --output data/preprocessing/test_set_magistral_annotated.csv \

@@ -209,3 +209,9 @@ __marimo__/
 # Csv data
 data/preprocessing/*.csv
 data/preprocessing/*/*.csv
+
+!data/preprocessing/datasets/*.csv
+!data/preprocessing/datasets/*/*.csv
+
+!data/preprocessing/iaa/*.csv
+!data/preprocessing/iaa/*/*.csv
