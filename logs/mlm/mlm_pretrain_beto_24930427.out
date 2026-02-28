@@ -1,0 +1,4 @@
+Setup done. Running python script...
+2026-02-28 20:43:06,641 [INFO] Loading tokenizer and model from: dccuchile/bert-base-spanish-wwm-uncased
+2026-02-28 20:43:06,838 [INFO] HTTP Request: HEAD https://huggingface.co/dccuchile/bert-base-spanish-wwm-uncased/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-02-28 20:43:06,842 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/dccuchile/bert-base-spanish-wwm-uncased/d1c9c4565c9d6731e57ed7f027b802697bad861e/config.json "HTTP/1.1 200 OK"

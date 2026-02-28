@@ -53,7 +53,6 @@ MAX_SEQ_LENGTH  = 512       # BERT max — use full context
 MLM_PROBABILITY = 0.15      # Standard masking probability
 SEED            = 42
 
-
 # ─────────────────────────────────────────────
 # Tokenization
 # ─────────────────────────────────────────────

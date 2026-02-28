@@ -1,0 +1,29 @@
+ID                                                               SIZE     LAST_ACCESSED LAST_MODIFIED REFS          
+---------------------------------------------------------------- -------- ------------- ------------- --------------
+model/Aaron2599/Meta-Llama-3.1-8B-Instruct-TurboMind-AWQ-4bit        5.8G 2 days ago    4 days ago    main          
+model/Linq-AI-Research/Linq-Embed-Mistral                           14.2G 5 months ago  5 months ago  main          
+model/MaziyarPanahi/phi-4-GGUF                                      29.3G 1 week ago    1 week ago    main          
+model/PlanTL-GOB-ES/longformer-base-4096-bne-es                      9.7K 4 months ago  4 months ago  main          
+model/Qwen/Qwen2.5-7B-Instruct-AWQ                                   5.6G 4 days ago    4 days ago    main          
+model/Qwen/Qwen3-Embedding-8B                                       15.9M 5 months ago  5 months ago  main          
+model/UMUTeam/roberta-spanish-sentiment-analysis                     1.5G 4 months ago  5 months ago  main          
+model/Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ                   19.3G 2 days ago    4 days ago    main          
+model/VerificadoProfesional/SaBERT-Spanish-Sentiment-Analysis      439.7M 4 months ago  5 months ago  main          
+model/allenai/longformer-base-4096                                   1.2G 3 months ago  3 months ago  main refs/pr/7
+model/bert-base-uncased                                            440.5M 4 months ago  4 months ago  main          
+model/dccuchile/bert-base-spanish-wwm-uncased                        1.4G 9 minutes ago 8 minutes ago main          
+model/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B                       7.0M 2 days ago    3 days ago    main          
+model/hiiamsid/sentence_similarity_spanish_es                      879.6M 5 months ago  5 months ago  main          
+model/jaimevera1107/all-MiniLM-L6-v2-similarity-es                  91.8M 5 months ago  5 months ago  main          
+model/jeffcookio/Mistral-Small-3.2-24B-Instruct-2506-awq-sym        15.1G 2 days ago    1 week ago    main          
+model/meta-llama/Llama-3.1-8B-Instruct                               9.1M 2 days ago    3 days ago    main          
+model/microsoft/phi-4                                                6.8M 1 week ago    5 months ago  main          
+model/milyiyo/paraphraser-spanish-t5-small                         486.1M 2 months ago  4 months ago  main refs/pr/2
+model/mistralai/Magistral-Small-2506_gguf                           25.1G 1 day ago     1 day ago     main          
+model/mistralai/Mistral-Small-3.2-24B-Instruct-2506                 19.4M 2 hours ago   4 days ago    main          
+model/mrm8488/longformer-base-4096-spanish                           1.2G 2 months ago  4 months ago  main refs/pr/1
+model/pysentimiento/robertuito-sentiment-analysis                    1.3G 4 months ago  5 months ago  main          
+model/sentence-transformers/distiluse-base-multilingual-cased-v1   545.1M 5 months ago  5 months ago  main          
+model/unsloth/Magistral-Small-2506-unsloth-bnb-4bit                 14.9G 2 hours ago   1 day ago     main          
+[1m
+Found 25 repo(s) for a total of 29 revision(s) and 138.8G on disk.[0m
