@@ -217,5 +217,6 @@ data/preprocessing/*/*.csv
 !data/preprocessing/iaa/*/*.csv
 
 # txt data
+data/mlm/
 data/mlm/*.txt
 data/mlm/*/*/*.txt
