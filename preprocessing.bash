@@ -9,7 +9,7 @@
 
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=1G
-#alternative SBATCH --gres=gpu:h100:1
+#SBATCH --gres=gpu:h100:1
 #SBATCH --time=00:00:30
 
 # Load necessary modules
