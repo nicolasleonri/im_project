@@ -2,36 +2,32 @@
   INTER-ANNOTATOR AGREEMENT REPORT
 ======================================================================
 
-Models compared  : test_set_mistral_annotated, test_set_llama_annotated, test_set_deepseek_annotated
-Total sentences  : 3846
-  → agreed       :   1376  (35.8%)  auto-labeled
-  → review       :   2407  (62.6%)  needs manual labels
-  → errors (NC)  :     63  (1.6%)  needs manual labels
+Models compared  : test_set_mistral_annotated, test_set_deepseek_annotated
+Total sentences  : 3494
+  → agreed       :   2022  (57.9%)  auto-labeled
+  → review       :   1413  (40.4%)  needs manual labels
+  → errors (NC)  :     59  (1.7%)  needs manual labels
 
-  ⚠  63 sentences contain NC labels. They are included in the metrics
+  ⚠  59 sentences contain NC labels. They are included in the metrics
      below as a separate 'nc' category, which may deflate agreement scores.
 
 ----------------------------------------------------------------------
   Label: label_binary
 ----------------------------------------------------------------------
-  Fleiss' Kappa        : 0.2871  [Fair]
-  Krippendorff's Alpha : 0.2977  [Fair]
+  Fleiss' Kappa        : 0.3555  [Fair]
+  Krippendorff's Alpha : 0.3722  [Fair]
 
   Pairwise Cohen's Kappa:
-    test_set_mistral_annotated     vs test_set_llama_annotated        κ = 0.3691  [Fair]
-    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3727  [Fair]
-    test_set_llama_annotated       vs test_set_deepseek_annotated     κ = 0.2167  [Fair]
+    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3859  [Fair]
 
 ----------------------------------------------------------------------
   Label: label_component
 ----------------------------------------------------------------------
-  Fleiss' Kappa        : 0.2975  [Fair]
-  Krippendorff's Alpha : 0.3036  [Fair]
+  Fleiss' Kappa        : 0.3683  [Fair]
+  Krippendorff's Alpha : 0.3782  [Fair]
 
   Pairwise Cohen's Kappa:
-    test_set_mistral_annotated     vs test_set_llama_annotated        κ = 0.3311  [Fair]
-    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3698  [Fair]
-    test_set_llama_annotated       vs test_set_deepseek_annotated     κ = 0.2319  [Fair]
+    test_set_mistral_annotated     vs test_set_deepseek_annotated     κ = 0.3882  [Fair]
 
 ======================================================================
   Kappa interpretation (Landis & Koch 1977):
