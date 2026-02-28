@@ -73,6 +73,7 @@ def tokenize_and_group(dataset, tokenizer, max_seq_length):
             truncation=False,       # Do NOT truncate — we chunk manually below
             padding=False,
             return_special_tokens_mask=True,
+            return_offsets_mapping=True,    # Required for Whole Word Masking
         )
 
     def group_texts(examples):
@@ -155,11 +156,11 @@ def main(args):
     # ── Data collator (Whole Word Masking) ────────────────────────────────
     # Consistent with original BETO pre-training
     data_collator = DataCollatorForLanguageModeling(
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
         mlm=True,
         mlm_probability=MLM_PROBABILITY,
         pad_to_multiple_of=8,
-        whole_word_mask=True,
+        whole_word_mask=True,   # Consistent with original BETO pre-training
     )
 
     # ── Training arguments ────────────────────────────────────────────────

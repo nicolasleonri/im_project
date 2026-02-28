@@ -3,19 +3,18 @@
 #SBATCH --output=logs/mlm/mlm_pretrain_beto_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
-#SBATCH --qos=prio
+#SBATCH --qos=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=8G
+#SBATCH --cpus-per-task=2
+#SBATCH --mem-per-cpu=10G
 #SBATCH --gres=gpu:h100:1
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 
 # Load necessary modules
 module purge
 module load CUDA/12.4.0
-# module load cuDNN/8.9.2.26-CUDA-12.1.1
 module load virtualenv/20.26.2-GCCcore-13.3.0
 
 # Environment variables

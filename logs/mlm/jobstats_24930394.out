@@ -1,0 +1,41 @@
+
+================================================================================
+                              Slurm Job Statistics                              
+================================================================================
+         Job ID: 24930394
+   User/Account: nicolasal97/agfritz
+       Job Name: mlm_preproces_corpus
+          State: COMPLETED
+          Nodes: 1
+      CPU Cores: 1
+     CPU Memory: 1GB
+  QOS/Partition: standard/scavenger
+        Cluster: curta
+     Start Time: Sat Feb 28, 2026 at 8:03 PM
+       Run Time: 00:05:46
+     Time Limit: 00:10:00
+
+                              Overall Utilization                               
+================================================================================
+  CPU utilization  [|||||||||||||||||||||||||||||||||||||||||||||| 92%]
+  CPU memory usage [|                                               2%]
+
+                              Detailed Utilization                              
+================================================================================
+  CPU utilization per node (CPU time used/run time)
+      c003.curta.zedat.fu-berlin.de: 00:05:20/00:05:46 (efficiency=92.6%)
+
+  CPU memory usage per node - used/allocated
+      c003.curta.zedat.fu-berlin.de: 20.7MB/1GB 
+
+                                     Notes                                      
+================================================================================
+  * This job only used 2% of the 1GB of total allocated CPU memory. For future
+    jobs, please allocate less memory by using a Slurm directive such as
+    --mem-per-cpu=1G or --mem=1G. This will reduce your queue times and make
+    the resources available to other users. For more info:
+      https://www.fu-berlin.de/en/sites/high-performance-computing/Dokumentation/Ressourcen-Manager/Hauptspeicher/
+
+  * Have a nice day!
+
+
