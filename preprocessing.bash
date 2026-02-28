@@ -131,9 +131,9 @@ echo "Setup done. Running python script..."
 #     --top_p 0.95
 
 ## Needs around 15 secs + 1x1GB + 1xCPU
-python3 -u scripts/preprocessing/calculate_iaa.py \
-    --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
-    --output_dir data/preprocessing/iaa/
+# python3 -u scripts/preprocessing/calculate_iaa.py \
+#     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
+#     --output_dir data/preprocessing/iaa/
 
 deactivate
 module purge
