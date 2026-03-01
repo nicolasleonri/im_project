@@ -48,7 +48,7 @@ log = logging.getLogger(__name__)
 # Configuration
 # ─────────────────────────────────────────────
 
-MODEL_NAME      = "dccuchile/bert-base-spanish-wwm-uncased"
+# MODEL_NAME      = "dccuchile/bert-base-spanish-wwm-uncased"
 MAX_SEQ_LENGTH  = 512       # BERT max — use full context
 MLM_PROBABILITY = 0.15      # Standard masking probability
 SEED            = 42
@@ -73,7 +73,6 @@ def tokenize_and_group(dataset, tokenizer, max_seq_length):
             truncation=False,       # Do NOT truncate — we chunk manually below
             padding=False,
             return_special_tokens_mask=True,
-            return_offsets_mapping=True,    # Required for Whole Word Masking
         )
 
     def group_texts(examples):
@@ -108,6 +107,11 @@ def tokenize_and_group(dataset, tokenizer, max_seq_length):
         desc="Grouping",
     )
 
+    # Remove offset_mapping after chunking — the collator uses the tokenizer
+    # directly for WWM, not the stored offsets. Keeping it causes IndexError.
+    if "offset_mapping" in grouped.column_names:
+        grouped = grouped.remove_columns("offset_mapping")
+
     log.info(f"Total training chunks: {len(grouped):,}")
     return grouped
 
@@ -120,9 +124,9 @@ def main(args):
     set_seed(SEED)
 
     # ── Load tokenizer and model ──────────────────────────────────────────
-    log.info(f"Loading tokenizer and model from: {MODEL_NAME}")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model     = AutoModelForMaskedLM.from_pretrained(MODEL_NAME)
+    log.info(f"Loading tokenizer and model from: {args.model_name}")
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    model     = AutoModelForMaskedLM.from_pretrained(args.model_name)
 
     log.info(f"Model parameters: {model.num_parameters():,}")
 
@@ -137,11 +141,19 @@ def main(args):
     raw_dataset = raw_dataset.filter(lambda x: len(x["text"].strip()) > 0)
     log.info(f"Corpus lines loaded: {len(raw_dataset):,}")
 
+    if args.debug_samples is not None:
+        raw_dataset = raw_dataset.select(range(min(args.debug_samples, len(raw_dataset))))
+        log.info(f"DEBUG MODE: using {len(raw_dataset):,} lines (cache disabled)")
+
     # ── Tokenize and chunk ────────────────────────────────────────────────
     # Tokenization is expensive — cache to disk so it only runs once.
     cache_path = os.path.join(os.path.dirname(args.corpus_file), "tokenized_cache")
 
-    if os.path.exists(cache_path):
+    if args.debug_samples is not None:
+        # Debug mode: always re-tokenize, never use cache
+        log.info("Tokenizing debug subset (no cache)...")
+        train_dataset = tokenize_and_group(raw_dataset, tokenizer, MAX_SEQ_LENGTH)
+    elif os.path.exists(cache_path):
         log.info(f"Loading tokenized dataset from cache: {cache_path}")
         from datasets import load_from_disk
         train_dataset = load_from_disk(cache_path)
@@ -160,7 +172,8 @@ def main(args):
         mlm=True,
         mlm_probability=MLM_PROBABILITY,
         pad_to_multiple_of=8,
-        whole_word_mask=True,   # Consistent with original BETO pre-training
+        # whole_word_mask=True is broken in this version of transformers.
+        # Standard MLM is used instead — negligible impact for domain adaptation.
     )
 
     # ── Training arguments ────────────────────────────────────────────────
@@ -267,6 +280,10 @@ if __name__ == "__main__":
                         help="Use fp16 mixed precision (for V100/A10/A5000)")
     parser.add_argument("--bf16",  action="store_true",  default=True,
                         help="Use bf16 mixed precision (recommended for H100)")
+    parser.add_argument("--debug_samples", type=int, default=None,
+                        help="If set, use only N lines from corpus for quick testing (skips cache)")
+    parser.add_argument("--model_name", required=True,
+                        help="Model base name")
 
     args = parser.parse_args()
     main(args)

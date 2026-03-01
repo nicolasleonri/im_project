@@ -1,16 +1,16 @@
 #!/bin/bash
-#SBATCH --job-name=mlm_pretrain_beto
-#SBATCH --output=logs/mlm/mlm_pretrain_beto_%j.out
+#SBATCH --job-name=mlm_pretrain_models
+#SBATCH --output=logs/mlm/mlm_pretrain_models_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
-#SBATCH --qos=standard
+#SBATCH --qos=prio
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
 #SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=10G
+#SBATCH --mem-per-cpu=7G
 #SBATCH --gres=gpu:h100:1
-#SBATCH --time=02:00:00
+#SBATCH --time=12:00:00
 
 # Load necessary modules
 module purge
@@ -33,9 +33,32 @@ echo "Setup done. Running python script..."
 #     --output_file data/mlm/corpus_clean.txt
 
 ###### SECOND TASK: PRETRAIN BETO #######
+## Needs 2x7GB, 1xH100 and around 1 hour
 python3 -u src/mlm/pretrain_beto.py \
+    --model_name dccuchile/bert-base-spanish-wwm-uncased \
     --corpus_file data/mlm/corpus_clean.txt \
     --output_dir /scratch/nicolasal97/im_project/beto-cgec \
+    --per_device_train_batch_size 64 \
+    --bf16
+
+python3 -u src/mlm/pretrain_beto.py \
+    --model_name skimai/spanberta-base-cased \
+    --corpus_file data/mlm/corpus_clean.txt \
+    --output_dir /scratch/nicolasal97/im_project/spanberta-cgec \
+    --per_device_train_batch_size 64 \
+    --bf16
+
+python3 -u src/mlm/pretrain_beto.py \
+    --model_name PeterPanecillo/PlanTL-GOB-ES-roberta-base-bne-copy \
+    --corpus_file data/mlm/corpus_clean.txt \
+    --output_dir /scratch/nicolasal97/im_project/roberta-cgec \
+    --per_device_train_batch_size 64 \
+    --bf16
+
+python3 -u src/mlm/pretrain_beto.py \
+    --model_name FacebookAI/xlm-roberta-base \
+    --corpus_file data/mlm/corpus_clean.txt \
+    --output_dir /scratch/nicolasal97/im_project/xlm-roberta-cgec \
     --per_device_train_batch_size 64 \
     --bf16
 
