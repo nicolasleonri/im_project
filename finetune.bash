@@ -1,0 +1,198 @@
+#!/bin/bash
+#SBATCH --job-name=finetune_and_eval_models
+#SBATCH --output=logs/evaluating/finetune_and_eval_models_%j.out
+#SBATCH --partition=scavenger
+#SBATCH --account=agfritz
+#SBATCH --qos=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+
+#SBATCH --cpus-per-task=2
+#SBATCH --mem-per-cpu=5G
+#SBATCH --gres=gpu:h100:1
+#SBATCH --time=01:00:00
+
+# Load necessary modules
+module purge
+module load CUDA/12.4.0
+module load virtualenv/20.26.2-GCCcore-13.3.0
+
+# Environment variables
+export HF_HOME=/scratch/nicolasal97/.cache/huggingface
+export TRANSFORMERS_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+
+# Activate virtual environment
+source venv/mlm/bin/activate
+
+echo "Setup done. Running python script..."
+
+##### FIRST TASK: EVALUATE BETO #######
+# Needs 1x2GB, 1xH100 and around 5 minutes per task
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/beto-base_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/beto-cgec_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path skimai/spanberta-base-cased  \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/spanberta-base_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/spanberta-cgec_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path PeterPanecillo/PlanTL-GOB-ES-roberta-base-bne-copy \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/roberta-base_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path /scratch/nicolasal97/im_project/roberta-cgec \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/roberta-cgec_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path FacebookAI/xlm-roberta-base \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/xlm-roberta-base_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+python3 -u src/evaluating/finetune_and_eval_model.py \
+    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+    --source_dataset data/preprocessing/datasets/furman_2023.csv \
+    --test_dataset data/preprocessing/test_set_final.csv \
+    --task component \
+    --output_dir results/xlm-roberta-cgec_furman_2023_component \
+    --n_trials 20 \
+    --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_gorrostieta_lopezlopez_2019_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_gorrostieta_lopezlopez_2019_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_guzman_monteza_2023_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/kovatchev_taule_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_kovatchev_taule_2022_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/kovatchev_taule_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_kovatchev_taule_2022_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2021.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task binary \
+#     --output_dir results/beto-base_ruizdolz_2021_binary \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2021.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_ruizdolz_2021_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/ruizdolz_2024.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_ruizdolz_2024_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/segura_tinoco_2022.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_segura_tinoco_2022_component \
+#     --n_trials 20 \
+#     --bf16
+
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/yeginbergen_2024.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-base_yeginbergen_2024_component \
+#     --n_trials 20 \
+#     --bf16
+
+deactivate
+module purge
+echo "Script finished"
+
+# sbatch --dependency=afterok:JOBID preprocessing.bash
