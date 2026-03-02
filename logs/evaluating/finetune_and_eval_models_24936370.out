@@ -1,0 +1,11 @@
+Setup done. Running python script...
+2026-03-02 09:44:38,789 [INFO] Loading source dataset : data/preprocessing/datasets/furman_2023.csv
+2026-03-02 09:44:39,759 [INFO]   Source samples: 297
+2026-03-02 09:44:39,759 [INFO] Loading test set       : data/preprocessing/test_set_final.csv
+2026-03-02 09:44:41,422 [INFO]   Test samples  : 2,820
+2026-03-02 09:44:41,525 [INFO]   Train: 207 | Val: 90
+2026-03-02 09:44:41,987 [INFO]   Class weights: {'none': np.float64(1.0), 'claim': np.float64(0.986), 'premise': np.float64(1.015)}
+2026-03-02 09:44:41,987 [INFO] Loading tokenizer from : dccuchile/bert-base-spanish-wwm-uncased
+2026-03-02 09:47:55,764 [INFO] Tokenizing datasets...
+2026-03-02 09:48:02,756 [INFO] Starting Optuna search (20 trials)...
+2026-03-02 09:48:02,779 [WARNING] Detected kernel version 4.18.0, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
