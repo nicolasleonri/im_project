@@ -1,0 +1,54 @@
+{
+  "experiment": {
+    "model": "/scratch/nicolasal97/im_project/roberta-cgec",
+    "source_dataset": "data/preprocessing/datasets/furman_2023.csv",
+    "task": "component",
+    "n_trials": 20
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.2042740282048105e-05,
+    "num_train_epochs": 4,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.11970080229105214,
+    "weight_decay": 0.02801193833726966
+  },
+  "test_set_metrics": {
+    "accuracy": 0.2862,
+    "precision_macro": 0.2065,
+    "recall_macro": 0.3339,
+    "f1_macro": 0.1493
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.3333333333333333,
+      "recall": 0.0015527950310559005,
+      "f1-score": 0.0030911901081916537,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.28611998580049697,
+      "recall": 1.0,
+      "f1-score": 0.4449351366271046,
+      "support": 806.0
+    },
+    "accuracy": 0.28617021276595744,
+    "macro avg": {
+      "precision": 0.20648443971127675,
+      "recall": 0.3338509316770186,
+      "f1-score": 0.14934210891176541,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.1579004876673288,
+      "recall": 0.28617021276595744,
+      "f1-score": 0.12787533565642614,
+      "support": 2820.0
+    }
+  }
+}
