@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=finetune_and_eval_models
-#SBATCH --output=logs/evaluating/finetune_and_eval_models_%j.out
+#SBATCH --output=logs/evaluating/test/finetune_and_eval_models_%j.out
 #SBATCH --partition=scavenger
 #SBATCH --account=agfritz
 #SBATCH --qos=standard
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=3
 #SBATCH --mem-per-cpu=2G
 #SBATCH --gres=gpu:h100:1
 #SBATCH --time=01:00:00
