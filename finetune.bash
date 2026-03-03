@@ -66,15 +66,6 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --bf16
 
 python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path PeterPanecillo/PlanTL-GOB-ES-roberta-base-bne-copy \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/roberta-base_furman_2023_component \
-    --n_trials 20 \
-    --bf16
-
-python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/roberta-cgec \
     --source_dataset data/preprocessing/datasets/furman_2023.csv \
     --test_dataset data/preprocessing/test_set_final.csv \
