@@ -9,8 +9,8 @@
 
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=1G
-#SBATCH --gres=gpu:h100:1
-#SBATCH --time=00:00:30
+#SBATCH --gres=gpu:a5000:1
+#SBATCH --time=00:10:00
 
 # Load necessary modules
 module purge
@@ -134,6 +134,14 @@ echo "Setup done. Running python script..."
 # python3 -u scripts/preprocessing/calculate_iaa.py \
 #     --inputs data/preprocessing/test_set_mistral_annotated.csv data/preprocessing/test_set_deepseek_annotated.csv \
 #     --output_dir data/preprocessing/iaa/
+
+python3 -u src/preprocessing/annotator.py \
+--input data/preprocessing/iaa/agreed.csv \
+--output data/preprocessing/dspy \
+--guidelines data/preprocessing/annotation_guidelines_v1.md \
+--n_samples 100 \
+--split 70 15 15 \
+--extract_gold_sample_dspy 
 
 deactivate
 module purge

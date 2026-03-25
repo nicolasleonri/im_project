@@ -53,6 +53,7 @@ from sklearn.metrics import (
     accuracy_score,
     precision_recall_fscore_support,
     classification_report,
+    confusion_matrix
 )
 
 import torch
@@ -67,6 +68,9 @@ from transformers import (
     DataCollatorWithPadding,
     set_seed,
 )
+
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 logging.basicConfig(
     level=logging.INFO,
@@ -121,6 +125,147 @@ def load_test_set(path: str) -> pd.DataFrame:
     })
     df = df.dropna(subset=["sentence_text", "label_binary", "label_component"])
     return df
+
+# ─────────────────────────────────────────────
+# Data saving
+# ─────────────────────────────────────────────
+
+def save_annotation_results(test_df, predictions, labels, id2label, label_col, output_dir):
+    """
+    Saves comprehensive annotation results including:
+    - Full predictions with metadata
+    - Confidence scores
+    - Error analysis breakdown
+    - Per-class performance metrics
+    """
+    
+    # Create output dataframe with all annotations
+    results_df = test_df.copy()
+    
+    # Add predictions and confidence scores
+    results_df["predicted_label"] = [id2label[p] for p in predictions]
+    results_df["true_label"] = test_df[label_col].values
+    results_df["correct"] = (results_df["predicted_label"] == results_df["true_label"])
+    
+    # Add confidence scores if available (probabilities)
+    if hasattr(test_results, 'predictions'):
+        probs = torch.nn.functional.softmax(
+            torch.tensor(test_results.predictions), dim=-1
+        ).numpy()
+        results_df["confidence"] = np.max(probs, axis=-1)
+        
+        # Add per-class probabilities
+        for idx, label_name in id2label.items():
+            results_df[f"prob_{label_name}"] = probs[:, idx]
+    
+    # Save full annotations
+    full_path = os.path.join(output_dir, "full_annotations.csv")
+    results_df.to_csv(full_path, sep=";", index=False, encoding="utf-8")
+    log.info(f"Full annotations saved to: {full_path}")
+    
+    # Save error cases for analysis
+    error_df = results_df[~results_df["correct"]].copy()
+    if len(error_df) > 0:
+        error_path = os.path.join(output_dir, "error_analysis.csv")
+        error_df.to_csv(error_path, sep=";", index=False, encoding="utf-8")
+        log.info(f"Error cases saved to: {error_path}")
+    
+    # Save correct cases
+    correct_df = results_df[results_df["correct"]].copy()
+    correct_path = os.path.join(output_dir, "correct_predictions.csv")
+    correct_df.to_csv(correct_path, sep=";", index=False, encoding="utf-8")
+    
+    # Generate per-class statistics
+    class_stats = {}
+    for label_name in id2label.values():
+        class_mask = results_df["true_label"] == label_name
+        class_total = class_mask.sum()
+        class_correct = (results_df["true_label"] == results_df["predicted_label"])[class_mask].sum()
+        
+        class_stats[label_name] = {
+            "total": int(class_total),
+            "correct": int(class_correct),
+            "accuracy": float(class_correct / class_total) if class_total > 0 else 0.0,
+            "error_rate": float(1 - (class_correct / class_total)) if class_total > 0 else 0.0
+        }
+    
+    # Save class statistics
+    stats_path = os.path.join(output_dir, "class_statistics.json")
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(class_stats, f, ensure_ascii=False, indent=2)
+    
+    return results_df, class_stats
+
+def save_detailed_predictions_with_metadata(test_dataset, predictions, labels, 
+                                           test_df, tokenizer, output_dir):
+    """
+    Saves detailed predictions including token-level information and metadata.
+    """
+    detailed_results = []
+    
+    for idx, (pred, true_label, row) in enumerate(zip(predictions, labels, test_df.itertuples())):
+        # Get input text
+        sentence = row.sentence_text
+        paragraph = getattr(row, 'paragraph_text', '')
+        
+        # Calculate token-level information if needed
+        tokens = tokenizer.tokenize(sentence)
+        
+        detailed_results.append({
+            "index": idx,
+            "sentence": sentence,
+            "paragraph": paragraph[:200] + "..." if len(paragraph) > 200 else paragraph,
+            "true_label": true_label,
+            "predicted_label": pred,
+            "correct": true_label == pred,
+            "sentence_length": len(sentence.split()),
+            "token_count": len(tokens),
+            "has_paragraph": bool(paragraph)
+        })
+    
+    detailed_df = pd.DataFrame(detailed_results)
+    detailed_path = os.path.join(output_dir, "detailed_predictions.csv")
+    detailed_df.to_csv(detailed_path, sep=";", index=False, encoding="utf-8")
+    log.info(f"Detailed predictions saved to: {detailed_path}")
+    
+    return detailed_df
+
+def save_confusion_matrix_visualization(labels, preds, id2label, output_dir):
+    """
+    Creates and saves confusion matrix visualization.
+    """
+    try:
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        
+        class_names = [id2label[i] for i in sorted(id2label.keys())]
+        cm = confusion_matrix(labels, preds)
+        
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=class_names, yticklabels=class_names)
+        plt.title('Confusion Matrix')
+        plt.ylabel('True Label')
+        plt.xlabel('Predicted Label')
+        plt.tight_layout()
+        
+        cm_path = os.path.join(output_dir, "confusion_matrix.png")
+        plt.savefig(cm_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        log.info(f"Confusion matrix saved to: {cm_path}")
+        
+        # Also save raw confusion matrix as JSON
+        cm_dict = {
+            "labels": class_names,
+            "matrix": cm.tolist()
+        }
+        cm_json_path = os.path.join(output_dir, "confusion_matrix.json")
+        with open(cm_json_path, "w", encoding="utf-8") as f:
+            json.dump(cm_dict, f, indent=2)
+            
+    except ImportError:
+        log.warning("matplotlib/seaborn not installed. Skipping confusion matrix visualization.")
 
 
 # ─────────────────────────────────────────────
@@ -400,7 +545,7 @@ def main(args):
         bf16=args.bf16,
         seed=SEED,
         logging_steps=50,
-        save_total_limit=1,
+        save_total_limit=1, # Keep only the best checkpoint for testing
         report_to="none",
         dataloader_num_workers=2,
     )
@@ -427,9 +572,13 @@ def main(args):
     # ── Evaluate on test set ──────────────────────────────────────────────
     log.info("Evaluating on Peruvian Spanish test set...")
     test_results = final_trainer.predict(test_dataset)
-    preds  = np.argmax(test_results.predictions, axis=-1)
+    preds = np.argmax(test_results.predictions, axis=-1)
     labels = test_results.label_ids
 
+    # Get probabilities for confidence scores
+    probs = torch.nn.functional.softmax(torch.tensor(test_results.predictions), dim=-1).numpy()
+
+    # Generate classification report
     report = classification_report(
         labels, preds,
         target_names=[id2label[i] for i in sorted(id2label)],
@@ -441,48 +590,156 @@ def main(args):
     )
     accuracy = accuracy_score(labels, preds)
 
-    # ── Save results ──────────────────────────────────────────────────────
+    # ── Save comprehensive annotation results ────────────────────────────
+    log.info("Saving annotation results...")
+
+    # 1. Full annotations with metadata
+    test_df_out = test_df.copy()
+    test_df_out["predicted_label"] = [id2label[p] for p in preds]
+    test_df_out["true_label"] = test_df[label_col].values
+    test_df_out["correct"] = (test_df_out["predicted_label"] == test_df_out["true_label"])
+    test_df_out["confidence"] = np.max(probs, axis=-1)
+
+    # Add per-class probabilities
+    for idx, label_name in id2label.items():
+        test_df_out[f"prob_{label_name}"] = probs[:, idx]
+
+    # Save full annotations
+    full_annotations_path = os.path.join(args.output_dir, "full_annotations.csv")
+    test_df_out.to_csv(full_annotations_path, sep=";", index=False, encoding="utf-8")
+    log.info(f"Full annotations saved to: {full_annotations_path}")
+
+    # 2. Save confusion matrix visualization
+    class_names = [id2label[i] for i in sorted(id2label.keys())]
+    cm = confusion_matrix(labels, preds)
+    
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                xticklabels=class_names, yticklabels=class_names)
+    plt.title(f'Confusion Matrix - {args.task} classification')
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label')
+    plt.tight_layout()
+    
+    cm_path = os.path.join(args.output_dir, "confusion_matrix.png")
+    plt.savefig(cm_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # Save raw confusion matrix
+    cm_dict = {"labels": class_names, "matrix": cm.tolist()}
+    cm_json_path = os.path.join(args.output_dir, "confusion_matrix.json")
+    with open(cm_json_path, "w", encoding="utf-8") as f:
+        json.dump(cm_dict, f, indent=2)
+
+    # 3. Save error cases for analysis
+    error_df = test_df_out[~test_df_out["correct"]].copy()
+    if len(error_df) > 0:
+        error_path = os.path.join(args.output_dir, "error_analysis.csv")
+        error_df.to_csv(error_path, sep=";", index=False, encoding="utf-8")
+        log.info(f"Error cases saved to: {error_path}")
+
+    # 4. Save per-class statistics
+    class_stats = {}
+    for label_name in id2label.values():
+        class_mask = test_df_out["true_label"] == label_name
+        class_total = class_mask.sum()
+        if class_total > 0:
+            class_correct = (test_df_out["true_label"] == test_df_out["predicted_label"])[class_mask].sum()
+            class_stats[label_name] = {
+                "total": int(class_total),
+                "correct": int(class_correct),
+                "accuracy": float(class_correct / class_total),
+                "avg_confidence": float(test_df_out.loc[class_mask, "confidence"].mean())
+            }
+
+    stats_path = os.path.join(args.output_dir, "class_statistics.json")
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(class_stats, f, ensure_ascii=False, indent=2)
+
+    # 5. Save detailed token-level analysis (optional, for deeper analysis)
+    detailed_results = []
+    for idx, row in test_df_out.iterrows():
+        tokens = tokenizer.tokenize(row["sentence_text"])
+        detailed_results.append({
+            "index": idx,
+            "sentence": row["sentence_text"][:100] + "..." if len(row["sentence_text"]) > 100 else row["sentence_text"],
+            "true_label": row["true_label"],
+            "predicted_label": row["predicted_label"],
+            "correct": row["correct"],
+            "confidence": row["confidence"],
+            "sentence_length": len(row["sentence_text"].split()),
+            "token_count": len(tokens),
+            "paragraph_preview": row.get("paragraph_text", "")[:100] if pd.notna(row.get("paragraph_text", "")) else ""
+        })
+
+    detailed_df = pd.DataFrame(detailed_results)
+    detailed_path = os.path.join(args.output_dir, "detailed_predictions.csv")
+    detailed_df.to_csv(detailed_path, sep=";", index=False, encoding="utf-8")
+    log.info(f"Detailed predictions saved to: {detailed_path}")
+
+    # ── Save main results JSON ────────────────────────────────────────────
     results = {
         "experiment": {
-            "model":          args.model_name_or_path,
+            "model": args.model_name_or_path,
             "source_dataset": args.source_dataset,
-            "task":           args.task,
-            "n_trials":       args.n_trials,
+            "test_dataset": args.test_dataset,
+            "task": args.task,
+            "n_trials": args.n_trials,
+            "timestamp": pd.Timestamp.now().isoformat(),
         },
         "best_hyperparameters": best_run.hyperparameters,
         "test_set_metrics": {
-            "accuracy":        round(accuracy, 4),
+            "accuracy": round(accuracy, 4),
             "precision_macro": round(precision, 4),
-            "recall_macro":    round(recall, 4),
-            "f1_macro":        round(f1, 4),
+            "recall_macro": round(recall, 4),
+            "f1_macro": round(f1, 4),
+        },
+        "per_class_metrics": {
+            label_name: {
+                "precision": report[label_name]["precision"],
+                "recall": report[label_name]["recall"],
+                "f1-score": report[label_name]["f1-score"],
+                "support": report[label_name]["support"]
+            }
+            for label_name in id2label.values()
         },
         "classification_report": report,
+        "class_statistics": class_stats,
     }
 
     results_path = os.path.join(args.output_dir, "test_results.json")
     with open(results_path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
-    # Save predictions for error analysis (RQ2)
-    test_df_out = test_df.copy()
-    test_df_out["prediction"] = [id2label[p] for p in preds]
-    test_df_out["correct"]    = (test_df_out["prediction"] == test_df_out[label_col])
+    # Keep original predictions file for backward compatibility
     preds_path = os.path.join(args.output_dir, "test_predictions.csv")
-    test_df_out.to_csv(preds_path, sep=";", index=False, encoding="utf-8")
+    test_df_out[["sentence_text", "true_label", "predicted_label", "correct", "confidence"]].to_csv(
+        preds_path, sep=";", index=False, encoding="utf-8"
+    )
 
-    # Cleanup checkpoints and optuna trials
-    for folder in ["final_model", "optuna_trials"]:
-        folder_path = Path(args.output_dir) / folder
-        if folder_path.exists():
-            shutil.rmtree(folder_path)
-            log.info(f"Deleted temporary folder: {folder_path}")
+    # ── Cleanup: Remove model checkpoints and temporary files ────────────
+    log.info("Cleaning up temporary files...")
 
-    log.info(f"Results saved to      : {results_path}")
-    log.info(f"Predictions saved to  : {preds_path}")
-    log.info(f"Best hyperparameters  : {hp_path}")
-    log.info(f"Test F1 (macro)       : {f1:.4f}")
-    log.info(f"Test Accuracy         : {accuracy:.4f}")
+    # Remove the entire final_model folder (including checkpoints)
+    final_model_path = Path(args.output_dir) / "final_model"
+    if final_model_path.exists():
+        shutil.rmtree(final_model_path)
+        log.info(f"Deleted model checkpoints: {final_model_path}")
 
+    # Remove Optuna trial folders if they exist
+    optuna_path = Path(args.output_dir) / "optuna_trials"
+    if optuna_path.exists():
+        shutil.rmtree(optuna_path)
+        log.info(f"Deleted Optuna trial folders: {optuna_path}")
+
+    # Also remove any other temporary directories
+    for temp_dir in ["checkpoints", "runs", "tmp"]:
+        temp_path = Path(args.output_dir) / temp_dir
+        if temp_path.exists():
+            shutil.rmtree(temp_path)
+            log.info(f"Deleted temporary folder: {temp_path}")
+
+    log.info("Cleanup complete - only results and annotations preserved")
 
 # ─────────────────────────────────────────────
 # Entry point
@@ -509,6 +766,12 @@ if __name__ == "__main__":
                         help="Use fp16 mixed precision (A5000)")
     parser.add_argument("--bf16", action="store_true", default=False,
                         help="Use bf16 mixed precision (H100, recommended)")
+    parser.add_argument("--save_confidence_scores", action="store_true", default=True,
+                    help="Save confidence scores for predictions")
+    parser.add_argument("--save_error_analysis", action="store_true", default=True,
+                        help="Save detailed error analysis files")
+    parser.add_argument("--save_visualizations", action="store_true", default=True,
+                        help="Generate confusion matrix plots")
 
     args = parser.parse_args()
     main(args)

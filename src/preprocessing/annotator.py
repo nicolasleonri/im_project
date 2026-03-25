@@ -8,7 +8,9 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
-from transformers import AutoTokenizer
+
+import dspy
+from typing import List, Dict, Optional
 
 """
 annotator.py
@@ -52,6 +54,13 @@ def parse_annotation_response(
     confidence_binary, confidence_component, reasoning.
     Falls back to safe defaults if parsing fails.
     """
+
+    def _clamp_confidence(val: float, name: str, article_id: str, sentence_j: int) -> float:
+        if not (0.0 <= val <= 1.0):
+            log.warning(f"[{article_id}|s{sentence_j}] {name}={val} out of [0,1]. Clamping.")
+            return max(0.0, min(1.0, val))
+        return val
+
     json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
     if json_match:
         try:
@@ -115,6 +124,7 @@ def annotate_sentences(
     max_tokens: int = 512,
     max_model_len: int = 32768,
     top_p: float = 1.0,
+    seed: int = 42,
 ) -> pd.DataFrame:
     """
     Annotate all sentences in df using vLLM.
@@ -135,7 +145,7 @@ def annotate_sentences(
     sampling_params = SamplingParams(
         temperature=temperature,
         max_tokens=max_tokens,
-        seed=42,
+        seed=seed,
         top_p=top_p,
     )
 
@@ -228,11 +238,33 @@ def parse_args() -> argparse.Namespace:
         "--top_p", type=float, default=1.0,
         help="Sampling top_p (default: 1.0)."
     )
+    parser.add_argument(
+        "--n_samples", type=int, default=100,
+        help="Total number of examples to sample (default: 100).",
+    )
+    parser.add_argument(
+        "--split", type=int, nargs=3, default=[70, 15, 15],
+        metavar=("TRAIN", "VAL", "TEST"),
+        help="Train/val/test split percentages, must sum to 100 (default: 70 15 15).",
+    )
+    parser.add_argument(
+        "--extract_gold_sample_dspy", required=True, default=False, action="store_true",
+        help="Flag to extract balanced samples for Dspy."
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42,
+        help="Random seed for reproducibility (default: 42).",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+
+    if args.extract_gold_sample_dspy:
+        log.info("⚠️ Extracting balanced gold sample for Dspy...")
+        extract_balanced_gold_sample_for_dspy(args.input, args.output, args.split, args.n_samples, args.seed)
+        return None
 
     # Load input
     log.info(f"Loading input from: {args.input}")
@@ -262,6 +294,7 @@ def main():
         max_tokens=args.max_tokens,
         max_model_len=args.max_model_len,
         top_p=args.top_p,
+        seed=args.seed,
     )
 
     clear_gpu_memory()
@@ -283,7 +316,6 @@ def main():
         errors="strict",
     )
 
-    clear_gpu_memory()
     log.info(f"Annotated output saved to: {args.output}")
     log.info(f"Final shape: {result_df.shape[0]} rows x {result_df.shape[1]} columns.")
 

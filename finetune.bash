@@ -29,69 +29,63 @@ echo "Setup done. Running python script..."
 
 ##### FIRST TASK: EVALUATE BETO #######
 # Needs 1x2GB, 1xH100 and around 5 minutes per task
+
+# 1) Furman 2023
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
     --source_dataset data/preprocessing/datasets/furman_2023.csv \
     --test_dataset data/preprocessing/test_set_final.csv \
     --task component \
     --output_dir results/beto-base_furman_2023_component \
-    --n_trials 20 \
+    --n_trials 2 \
     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/beto-cgec_furman_2023_component \
-    --n_trials 20 \
-    --bf16
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/beto-cgec_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased  \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/spanberta-base_furman_2023_component \
-    --n_trials 20 \
-    --bf16
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased  \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/spanberta-base_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/spanberta-cgec_furman_2023_component \
-    --n_trials 20 \
-    --bf16
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/spanberta-cgec_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/roberta-cgec \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/roberta-cgec_furman_2023_component \
-    --n_trials 20 \
-    --bf16
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/xlm-roberta-base_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/xlm-roberta-base_furman_2023_component \
-    --n_trials 20 \
-    --bf16
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/furman_2023.csv \
+#     --test_dataset data/preprocessing/test_set_final.csv \
+#     --task component \
+#     --output_dir results/xlm-roberta-cgec_furman_2023_component \
+#     --n_trials 20 \
+#     --bf16
 
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/furman_2023.csv \
-    --test_dataset data/preprocessing/test_set_final.csv \
-    --task component \
-    --output_dir results/xlm-roberta-cgec_furman_2023_component \
-    --n_trials 20 \
-    --bf16
-
+##### 2) gorrostieta_lopezlopez_2019
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/gorrostieta_lopezlopez_2019.csv \
@@ -110,6 +104,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 3) guzman_monteza_2023
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
@@ -119,6 +114,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 4) kovatchev_taule_2022
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/kovatchev_taule_2022.csv \
@@ -137,6 +133,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 5) ruizdolz_2021
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/ruizdolz_2021.csv \
@@ -155,6 +152,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 6) ruizdolz_2024
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/ruizdolz_2024.csv \
@@ -164,6 +162,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 7) segura_tinoco_2022
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/segura_tinoco_2022.csv \
@@ -173,6 +172,7 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --n_trials 20 \
 #     --bf16
 
+##### 8) yeginbergen_2024
 # python3 -u src/evaluating/finetune_and_eval_model.py \
 #     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
 #     --source_dataset data/preprocessing/datasets/yeginbergen_2024.csv \

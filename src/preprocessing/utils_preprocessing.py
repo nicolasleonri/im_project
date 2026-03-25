@@ -11,6 +11,8 @@ import gc
 import torch
 import spacy
 import torch.distributed as dist
+import os
+import csv
 
 # Logging setup
 logging.basicConfig(
@@ -213,29 +215,56 @@ Ejemplo de output válido:
 {{"label_binary": "argumentative", "label_component": "claim", "confidence_binary": 0.91, "confidence_component": 0.85, "reasoning": "La oración expresa un juicio evaluativo que puede ser cuestionado, cumpliendo el Challenge Test."}}
 """
 
+CSV_KWARGS = dict(
+    sep=";",
+    decimal=".",
+    na_values="NA",
+    quotechar='"',
+    encoding="utf-8",
+)
+
+CSV_SAVE_KWARGS = dict(
+    index=False,
+    header=True,
+    encoding="utf-8",
+    na_rep="NA",
+    sep=";",
+    quotechar='"',
+    date_format="%Y-%m-%d",
+    quoting=csv.QUOTE_ALL,
+    decimal=".",
+    errors="strict",
+)
+
 # Functions
-def load_input(path: str, skip: bool = False) -> pd.DataFrame:
+def load_input(path: str, skip: bool = False, extract_dspy: bool = False) -> pd.DataFrame:
     """Load input CSV and validate required columns."""
-    log.info(f"Loading input from: {path}")
     
-    df = pd.read_csv(path,
-                    sep=";", 
-                    decimal=".",
-                    na_values="NA", 
-                    quotechar='"', 
-                    encoding="utf-8")
+    log.info(f"Loading input from: {path}")
+    df = pd.read_csv(path, **CSV_KWARGS)
+    log.info(f"Loaded {len(df)} rows.")
 
     if skip:
-        REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date", 
-                          "article_id", "paragraph_i", "paragraph_text"}
+        REQUIRED_COLUMNS = {
+            "headline", "content", "newspaper", "date", 
+            "article_id", "paragraph_i", "paragraph_text"
+        }
+    elif extract_dspy:
+        REQUIRED_COLUMNS = {
+            "article_id", "newspaper", "date", "year", "headline", "content",
+            "paragraph_i", "paragraph_text", "sentence_j", "sentence_text",
+            "label_binary_final", "label_component_final"
+        }
     else:
-        REQUIRED_COLUMNS = {"headline", "content", "newspaper", "date"}
+        REQUIRED_COLUMNS = {
+            "headline", "content", "newspaper", "date"
+        }
         
     missing = REQUIRED_COLUMNS - set(df.columns)
     if missing:
         raise ValueError(f"Input CSV is missing required columns: {missing}")
 
-    if not skip:
+    if not skip and not extract_dspy:
         KEEP_COLUMNS = ["headline", "content", "newspaper", "date"]
         df = df[KEEP_COLUMNS].copy() # Discard unnecessary columns early to reduce memory fragmentation
 
@@ -249,7 +278,7 @@ def load_input(path: str, skip: bool = False) -> pd.DataFrame:
     df["year"] = df["date"].dt.year
 
     # Assign stable article_id
-    if not skip:
+    if not skip and not extract_dspy:
         df = df.reset_index(drop=True)
         df["article_id"] = df.index.map(lambda i: f"ART_{i:06d}")
 
@@ -262,6 +291,10 @@ def load_guidelines(path: str) -> str:
         guidelines = f.read()
     log.info(f"Guidelines loaded: {len(guidelines)} characters.")
     return guidelines
+
+def load_tokenizer(model_name: str) -> AutoTokenizer:
+    kwargs = {"fix_mistral_regex": True} if "mistral" in model_name.lower() else {}
+    return AutoTokenizer.from_pretrained(model_name, **kwargs)
 
 def build_paragrapher_prompts(df: pd.DataFrame, model_name: str) -> list[str]:    
     if "mistral" in model_name.lower():
@@ -387,6 +420,7 @@ def stratified_sample(
     min_stratum_size: int = 10,
     min_sentences: int = 2,
     seed: int = 42,
+    extract_dspy: bool = False,
 ) -> pd.DataFrame:
     """
     Sample n_samples paragraphs with stratification.
@@ -402,6 +436,43 @@ def stratified_sample(
     Sampling is at the paragraph level (one row per paragraph,
     all sentences of sampled paragraphs are included).
     """
+    if extract_dspy:
+        strat_col = ["label_binary_final", "label_component_final"]
+        stratum_sizes = df.groupby(strat_col).size()
+
+        if n_samples > len(df):
+            raise ValueError(
+                f"n_samples ({n_samples}) exceeds available clean rows ({len(df)})."
+            )
+
+        # Proportional allocation
+        allocations = (stratum_sizes / stratum_sizes.sum() * n_samples).round().astype(int)
+
+        # Fix rounding so total == n_samples exactly
+        diff = n_samples - allocations.sum()
+        if diff != 0:
+            allocations[allocations.idxmax()] += diff
+
+        log.info(f"Stratum allocation:\n{allocations.to_string()}")
+
+        parts = []
+        for (lb, lc), n_alloc in allocations.items():
+            stratum = df[(df["label_binary_final"] == lb) & (df["label_component_final"] == lc)]
+            if len(stratum) < n_alloc:
+                log.warning(
+                    f"Stratum ({lb}, {lc}) has {len(stratum)} rows but {n_alloc} requested. "
+                    f"Sampling with replacement."
+                )
+                parts.append(stratum.sample(n=n_alloc, replace=True, random_state=seed))
+            else:
+                parts.append(stratum.sample(n=n_alloc, replace=False, random_state=seed))
+
+        sampled = pd.concat(parts, ignore_index=True).sample(frac=1, random_state=seed)
+        log.info(f"Sampled {len(sampled)} rows.")
+        return sampled
+    else:
+        pass
+    
     # Work at paragraph level — count sentences per paragraph first
     para_df = (
         df.groupby(["article_id", "paragraph_i"])
@@ -475,11 +546,11 @@ def stratified_sample(
         zip(sampled_paras["article_id"], sampled_paras["paragraph_i"])
     )
 
-    # Retrieve all sentence rows for sampled paragraphs
-    mask = df.apply(
-        lambda r: (r["article_id"], r["paragraph_i"]) in sampled_keys, axis=1
+    result = df.merge(
+        sampled_paras[["article_id", "paragraph_i"]].drop_duplicates(),
+        on=["article_id", "paragraph_i"],
+        how="inner",
     )
-    result = df[mask].copy()
 
     log.info(
         f"Final sample: {len(sampled_paras)} paragraphs, "
@@ -496,16 +567,73 @@ def clear_gpu_memory():
         torch.cuda.synchronize()
         torch.cuda.empty_cache()
     else:
-        print("⚠️ No GPU available, skipping CUDA cleanup")
+        log.info("⚠️ No GPU available, skipping CUDA cleanup")
 
     if dist.is_initialized():
         dist.destroy_process_group()
     else:
-        print("⚠️ No distributed process group initialized, skipping dist cleanup")
+        log.info("⚠️ No distributed process group initialized, skipping dist cleanup")
 
-        
-        
-            
+def split_dataset(
+    df: pd.DataFrame,
+    splits: tuple[int, int, int],
+    seed: int,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Split df into train / validation / test according to percentage splits.
+    Splits are stratified by (label_binary, label_component).
 
-    
-    
+    Args:
+        splits: (train_pct, val_pct, test_pct) — must sum to 100.
+    """
+    train_pct, val_pct, test_pct = splits
+    assert train_pct + val_pct + test_pct == 100, "Splits must sum to 100."
+
+    n = len(df)
+    n_train = round(n * train_pct / 100)
+    n_val   = round(n * val_pct   / 100)
+    n_test  = n - n_train - n_val  # absorb rounding remainder
+
+    # Shuffle once, then slice — simple and reproducible
+    df = df.sample(frac=1, random_state=seed).reset_index(drop=True)
+    train = df.iloc[:n_train]
+    val   = df.iloc[n_train : n_train + n_val]
+    test  = df.iloc[n_train + n_val :]
+
+    log.info(f"Split sizes — train: {len(train)}, val: {len(val)}, test: {len(test)}")
+    return train, val, test
+
+def report_class_balance(df: pd.DataFrame, label: str = "") -> None:
+    """Log class distribution."""
+    counts = df.groupby(["label_binary_final", "label_component_final"]).size().reset_index(name="n")
+    counts["pct"] = (counts["n"] / len(df) * 100).round(1)
+    log.info(f"Class distribution {label}:\n{counts.to_string(index=False)}")
+
+def extract_balanced_gold_sample_for_dspy(input_path, output_path, split, n_samples, seed):
+    if sum(split) != 100:
+        raise ValueError(f"--split values must sum to 100, got {split}.")
+
+    df = load_input(input_path, skip = False, extract_dspy = True)
+    print(df)
+    report_class_balance(df, label="(full clean set)")
+
+    sampled = stratified_sample(df, n_samples=n_samples, seed=seed, extract_dspy=True)
+    report_class_balance(sampled, label="(sampled)")
+
+    train, val, test = split_dataset(
+        sampled,
+        splits=tuple(split),
+        seed=seed,
+    )
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    train.to_csv(os.path.join(output_path, "gold_train.csv"), **CSV_SAVE_KWARGS)
+    val.to_csv(os.path.join(output_path, "gold_val.csv"), **CSV_SAVE_KWARGS)
+    test.to_csv(os.path.join(output_path, "gold_test.csv"), **CSV_SAVE_KWARGS)
+
+    report_class_balance(train, label="(train)")
+    report_class_balance(val,   label="(val)")
+    report_class_balance(test,  label="(test)")
+
+    log.info("Done.")
+    return None
