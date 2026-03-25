@@ -1,0 +1,16 @@
+=========================================
+Starting All Source Dataset Experiments
+=========================================
+Test dataset: data/preprocessing/test_set_final.csv
+Number of trials: 20
+=========================================
+
+=== Dataset 1/8: Furman 2023 ===
+----------------------------------------
+2026-03-25 16:52:30,478 [INFO] Loading source dataset : data/preprocessing/datasets/furman_2023.csv
+2026-03-25 16:52:30,483 [INFO]   Source samples: 297
+2026-03-25 16:52:30,483 [INFO] Loading test set       : data/preprocessing/test_set_final.csv
+2026-03-25 16:52:30,546 [INFO]   Test samples  : 2,820
+2026-03-25 16:52:30,548 [INFO]   Train: 207 | Val: 90
+2026-03-25 16:52:30,551 [INFO]   Class weights: {'none': np.float64(1.0), 'claim': np.float64(0.986), 'premise': np.float64(1.015)}
+2026-03-25 16:52:30,551 [INFO] Loading tokenizer from : dccuchile/bert-base-spanish-wwm-uncased
