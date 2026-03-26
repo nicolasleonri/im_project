@@ -1,0 +1,96 @@
+{
+  "experiment": {
+    "model": "skimai/spanberta-base-cased",
+    "source_dataset": "data/preprocessing/datasets/segura_tinoco_2022.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "component",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T11:16:00.574438"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 1.5402999550923865e-05,
+    "num_train_epochs": 6,
+    "per_device_train_batch_size": 32,
+    "warmup_ratio": 0.08733668222533651,
+    "weight_decay": 0.03023660547351136
+  },
+  "test_set_metrics": {
+    "accuracy": 0.3121,
+    "precision_macro": 0.2271,
+    "recall_macro": 0.3768,
+    "f1_macro": 0.2379
+  },
+  "per_class_metrics": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.3780487804878049,
+      "recall": 0.19254658385093168,
+      "f1-score": 0.2551440329218107,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.30337078651685395,
+      "recall": 0.9379652605459057,
+      "f1-score": 0.4584596725288053,
+      "support": 806.0
+    }
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.3780487804878049,
+      "recall": 0.19254658385093168,
+      "f1-score": 0.2551440329218107,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.30337078651685395,
+      "recall": 0.9379652605459057,
+      "f1-score": 0.4584596725288053,
+      "support": 806.0
+    },
+    "accuracy": 0.3120567375886525,
+    "macro avg": {
+      "precision": 0.2271398556682196,
+      "recall": 0.37683728146561246,
+      "f1-score": 0.237867901816872,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.17304264842791867,
+      "recall": 0.3120567375886525,
+      "f1-score": 0.18930186285810752,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "none": {
+      "total": 1370,
+      "correct": 0,
+      "accuracy": 0.0,
+      "avg_confidence": 0.6332800984382629
+    },
+    "claim": {
+      "total": 644,
+      "correct": 124,
+      "accuracy": 0.19254658385093168,
+      "avg_confidence": 0.6133604049682617
+    },
+    "premise": {
+      "total": 806,
+      "correct": 756,
+      "accuracy": 0.9379652605459057,
+      "avg_confidence": 0.6358427405357361
+    }
+  }
+}

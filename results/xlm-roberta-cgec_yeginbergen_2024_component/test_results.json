@@ -1,0 +1,96 @@
+{
+  "experiment": {
+    "model": "/scratch/nicolasal97/im_project/xlm-roberta-cgec",
+    "source_dataset": "data/preprocessing/datasets/yeginbergen_2024.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "component",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T12:46:10.770997"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.924336407711267e-05,
+    "num_train_epochs": 3,
+    "per_device_train_batch_size": 32,
+    "warmup_ratio": 0.014560560411634262,
+    "weight_decay": 0.07297978835129988
+  },
+  "test_set_metrics": {
+    "accuracy": 0.5043,
+    "precision_macro": 0.5188,
+    "recall_macro": 0.3913,
+    "f1_macro": 0.3635
+  },
+  "per_class_metrics": {
+    "none": {
+      "precision": 0.5093856655290102,
+      "recall": 0.8715328467153285,
+      "f1-score": 0.6429725363489499,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.6019417475728155,
+      "recall": 0.09627329192546584,
+      "f1-score": 0.16599732262382866,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.4450402144772118,
+      "recall": 0.20595533498759305,
+      "f1-score": 0.28159457167090757,
+      "support": 806.0
+    }
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.5093856655290102,
+      "recall": 0.8715328467153285,
+      "f1-score": 0.6429725363489499,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.6019417475728155,
+      "recall": 0.09627329192546584,
+      "f1-score": 0.16599732262382866,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.4450402144772118,
+      "recall": 0.20595533498759305,
+      "f1-score": 0.28159457167090757,
+      "support": 806.0
+    },
+    "accuracy": 0.5042553191489362,
+    "macro avg": {
+      "precision": 0.5187892091930125,
+      "recall": 0.39125382454279584,
+      "f1-score": 0.3635214768812287,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.512131652510734,
+      "recall": 0.5042553191489362,
+      "f1-score": 0.4307588210406236,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "none": {
+      "total": 1370,
+      "correct": 1194,
+      "accuracy": 0.8715328467153285,
+      "avg_confidence": 0.8819104433059692
+    },
+    "claim": {
+      "total": 644,
+      "correct": 62,
+      "accuracy": 0.09627329192546584,
+      "avg_confidence": 0.8041300177574158
+    },
+    "premise": {
+      "total": 806,
+      "correct": 166,
+      "accuracy": 0.20595533498759305,
+      "avg_confidence": 0.8098450303077698
+    }
+  }
+}

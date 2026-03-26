@@ -1,0 +1,20 @@
+{
+  "none": {
+    "total": 1370,
+    "correct": 0,
+    "accuracy": 0.0,
+    "avg_confidence": 0.916490375995636
+  },
+  "claim": {
+    "total": 644,
+    "correct": 169,
+    "accuracy": 0.26242236024844723,
+    "avg_confidence": 0.9209636449813843
+  },
+  "premise": {
+    "total": 806,
+    "correct": 663,
+    "accuracy": 0.8225806451612904,
+    "avg_confidence": 0.9301992654800415
+  }
+}

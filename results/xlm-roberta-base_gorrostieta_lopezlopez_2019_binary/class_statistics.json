@@ -1,0 +1,14 @@
+{
+  "non-argumentative": {
+    "total": 1370,
+    "correct": 1369,
+    "accuracy": 0.9992700729927008,
+    "avg_confidence": 0.9931424856185913
+  },
+  "argumentative": {
+    "total": 1450,
+    "correct": 1,
+    "accuracy": 0.000689655172413793,
+    "avg_confidence": 0.9941426515579224
+  }
+}

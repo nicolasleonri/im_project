@@ -1,0 +1,78 @@
+{
+  "experiment": {
+    "model": "dccuchile/bert-base-spanish-wwm-uncased",
+    "source_dataset": "data/preprocessing/datasets/kovatchev_taule_2022.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "binary",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T02:05:44.122774"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.6867587555895873e-05,
+    "num_train_epochs": 6,
+    "per_device_train_batch_size": 32,
+    "warmup_ratio": 0.03534732027778972,
+    "weight_decay": 0.0011731927112031304
+  },
+  "test_set_metrics": {
+    "accuracy": 0.5387,
+    "precision_macro": 0.5385,
+    "recall_macro": 0.5385,
+    "f1_macro": 0.5385
+  },
+  "per_class_metrics": {
+    "non-argumentative": {
+      "precision": 0.5247666905958364,
+      "recall": 0.5335766423357664,
+      "f1-score": 0.5291349981903728,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.5522074281709881,
+      "recall": 0.543448275862069,
+      "f1-score": 0.5477928397636427,
+      "support": 1450.0
+    }
+  },
+  "classification_report": {
+    "non-argumentative": {
+      "precision": 0.5247666905958364,
+      "recall": 0.5335766423357664,
+      "f1-score": 0.5291349981903728,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.5522074281709881,
+      "recall": 0.543448275862069,
+      "f1-score": 0.5477928397636427,
+      "support": 1450.0
+    },
+    "accuracy": 0.5386524822695036,
+    "macro avg": {
+      "precision": 0.5384870593834122,
+      "recall": 0.5385124590989177,
+      "f1-score": 0.5384639189770077,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.5388762897036271,
+      "recall": 0.5386524822695036,
+      "f1-score": 0.5387285692120896,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "non-argumentative": {
+      "total": 1370,
+      "correct": 731,
+      "accuracy": 0.5335766423357664,
+      "avg_confidence": 0.6609512567520142
+    },
+    "argumentative": {
+      "total": 1450,
+      "correct": 788,
+      "accuracy": 0.543448275862069,
+      "avg_confidence": 0.6584811210632324
+    }
+  }
+}

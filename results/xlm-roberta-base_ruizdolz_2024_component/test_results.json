@@ -1,0 +1,96 @@
+{
+  "experiment": {
+    "model": "FacebookAI/xlm-roberta-base",
+    "source_dataset": "data/preprocessing/datasets/ruizdolz_2024.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "component",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T11:00:34.982286"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 4.818197637161065e-05,
+    "num_train_epochs": 6,
+    "per_device_train_batch_size": 32,
+    "warmup_ratio": 0.03230333615206345,
+    "weight_decay": 0.05516467910166345
+  },
+  "test_set_metrics": {
+    "accuracy": 0.3057,
+    "precision_macro": 0.2739,
+    "recall_macro": 0.365,
+    "f1_macro": 0.2182
+  },
+  "per_class_metrics": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5290322580645161,
+      "recall": 0.12732919254658384,
+      "f1-score": 0.20525657071339173,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.2926829268292683,
+      "recall": 0.967741935483871,
+      "f1-score": 0.449438202247191,
+      "support": 806.0
+    }
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5290322580645161,
+      "recall": 0.12732919254658384,
+      "f1-score": 0.20525657071339173,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.2926829268292683,
+      "recall": 0.967741935483871,
+      "f1-score": 0.449438202247191,
+      "support": 806.0
+    },
+    "accuracy": 0.3056737588652482,
+    "macro avg": {
+      "precision": 0.2739050616312615,
+      "recall": 0.36502370934348494,
+      "f1-score": 0.21823159098686093,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.20446780610565196,
+      "recall": 0.3056737588652482,
+      "f1-score": 0.17533064629456038,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "none": {
+      "total": 1370,
+      "correct": 0,
+      "accuracy": 0.0,
+      "avg_confidence": 0.9902735948562622
+    },
+    "claim": {
+      "total": 644,
+      "correct": 82,
+      "accuracy": 0.12732919254658384,
+      "avg_confidence": 0.9774149060249329
+    },
+    "premise": {
+      "total": 806,
+      "correct": 780,
+      "accuracy": 0.967741935483871,
+      "avg_confidence": 0.9907784461975098
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "experiment": {
+    "model": "skimai/spanberta-base-cased",
+    "source_dataset": "data/preprocessing/datasets/ruizdolz_2024.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "component",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T10:46:34.185628"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.159963642446799e-05,
+    "num_train_epochs": 4,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.007717629770497864,
+    "weight_decay": 0.04131522526178293
+  },
+  "test_set_metrics": {
+    "accuracy": 0.3025,
+    "precision_macro": 0.2674,
+    "recall_macro": 0.3613,
+    "f1_macro": 0.2163
+  },
+  "per_class_metrics": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5125,
+      "recall": 0.12732919254658384,
+      "f1-score": 0.20398009950248755,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.28984962406015036,
+      "recall": 0.956575682382134,
+      "f1-score": 0.4448932487016734,
+      "support": 806.0
+    }
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5125,
+      "recall": 0.12732919254658384,
+      "f1-score": 0.20398009950248755,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.28984962406015036,
+      "recall": 0.956575682382134,
+      "f1-score": 0.4448932487016734,
+      "support": 806.0
+    },
+    "accuracy": 0.3024822695035461,
+    "macro avg": {
+      "precision": 0.26744987468671677,
+      "recall": 0.3613016249762393,
+      "f1-score": 0.21629111606805365,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.1998825521249933,
+      "recall": 0.3024822695035461,
+      "f1-score": 0.1737401214656563,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "none": {
+      "total": 1370,
+      "correct": 0,
+      "accuracy": 0.0,
+      "avg_confidence": 0.9742233753204346
+    },
+    "claim": {
+      "total": 644,
+      "correct": 82,
+      "accuracy": 0.12732919254658384,
+      "avg_confidence": 0.9471085071563721
+    },
+    "premise": {
+      "total": 806,
+      "correct": 771,
+      "accuracy": 0.956575682382134,
+      "avg_confidence": 0.9704892039299011
+    }
+  }
+}

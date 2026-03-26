@@ -1,0 +1,78 @@
+{
+  "experiment": {
+    "model": "/scratch/nicolasal97/im_project/beto-cgec",
+    "source_dataset": "data/preprocessing/datasets/ruizdolz_2021.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "binary",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T08:57:41.165728"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 1.1949985098646768e-05,
+    "num_train_epochs": 6,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.09692128309175176,
+    "weight_decay": 0.026491977567445535
+  },
+  "test_set_metrics": {
+    "accuracy": 0.4862,
+    "precision_macro": 0.5763,
+    "recall_macro": 0.5003,
+    "f1_macro": 0.3283
+  },
+  "per_class_metrics": {
+    "non-argumentative": {
+      "precision": 0.48597799077032305,
+      "recall": 0.9992700729927008,
+      "f1-score": 0.6539288273226654,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.6666666666666666,
+      "recall": 0.001379310344827586,
+      "f1-score": 0.0027529249827942187,
+      "support": 1450.0
+    }
+  },
+  "classification_report": {
+    "non-argumentative": {
+      "precision": 0.48597799077032305,
+      "recall": 0.9992700729927008,
+      "f1-score": 0.6539288273226654,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.6666666666666666,
+      "recall": 0.001379310344827586,
+      "f1-score": 0.0027529249827942187,
+      "support": 1450.0
+    },
+    "accuracy": 0.48617021276595745,
+    "macro avg": {
+      "precision": 0.5763223287184949,
+      "recall": 0.5003246916687641,
+      "f1-score": 0.32834087615272983,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.578885288660287,
+      "recall": 0.48617021276595745,
+      "f1-score": 0.3191043385308877,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "non-argumentative": {
+      "total": 1370,
+      "correct": 1369,
+      "accuracy": 0.9992700729927008,
+      "avg_confidence": 0.9743027091026306
+    },
+    "argumentative": {
+      "total": 1450,
+      "correct": 2,
+      "accuracy": 0.001379310344827586,
+      "avg_confidence": 0.979405403137207
+    }
+  }
+}

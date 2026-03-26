@@ -1,0 +1,78 @@
+{
+  "experiment": {
+    "model": "/scratch/nicolasal97/im_project/spanberta-cgec",
+    "source_dataset": "data/preprocessing/datasets/guzman_monteza_2023.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "binary",
+    "n_trials": 20,
+    "timestamp": "2026-03-26T00:41:33.418665"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 3.3301398588831976e-05,
+    "num_train_epochs": 4,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.0590633459358407,
+    "weight_decay": 0.08958103180526028
+  },
+  "test_set_metrics": {
+    "accuracy": 0.5163,
+    "precision_macro": 0.7576,
+    "recall_macro": 0.5022,
+    "f1_macro": 0.3444
+  },
+  "per_class_metrics": {
+    "non-argumentative": {
+      "precision": 1.0,
+      "recall": 0.004379562043795621,
+      "f1-score": 0.00872093023255814,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.5152807391613362,
+      "recall": 1.0,
+      "f1-score": 0.6801125703564728,
+      "support": 1450.0
+    }
+  },
+  "classification_report": {
+    "non-argumentative": {
+      "precision": 1.0,
+      "recall": 0.004379562043795621,
+      "f1-score": 0.00872093023255814,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.5152807391613362,
+      "recall": 1.0,
+      "f1-score": 0.6801125703564728,
+      "support": 1450.0
+    },
+    "accuracy": 0.5163120567375886,
+    "macro avg": {
+      "precision": 0.7576403695806682,
+      "recall": 0.5021897810218978,
+      "f1-score": 0.34441675029451546,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.7507649190723183,
+      "recall": 0.5163120567375886,
+      "f1-score": 0.35394003597003193,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "non-argumentative": {
+      "total": 1370,
+      "correct": 6,
+      "accuracy": 0.004379562043795621,
+      "avg_confidence": 0.9983032941818237
+    },
+    "argumentative": {
+      "total": 1450,
+      "correct": 1450,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9986600875854492
+    }
+  }
+}
