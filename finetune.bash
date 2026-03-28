@@ -248,15 +248,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-base_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-base_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 # BETO-CGEC
 # Binary task
@@ -269,15 +269,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-cgec_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-cgec_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 # SpanBERTa Base
 # Binary task
@@ -290,15 +290,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-base_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-base_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 # SpanBERTa-CGEC
 # Binary task
@@ -311,15 +311,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-cgec_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-cgec_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 # XLM-RoBERTa Base
 # Binary task
@@ -332,15 +332,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-base_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-base_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 # XLM-RoBERTa-CGEC
 # Binary task
@@ -353,15 +353,15 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
     --n_trials $N_TRIALS \
     --bf16
 
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-cgec_guzman_monteza_2023_component \
-    --n_trials $N_TRIALS \
-    --bf16
+# Component task [Only UNK info]
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/guzman_monteza_2023.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-cgec_guzman_monteza_2023_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
 
 ##### 4) Kovatchev Taule 2022
 echo ""
