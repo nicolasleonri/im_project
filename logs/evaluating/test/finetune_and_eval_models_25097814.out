@@ -1,0 +1,16 @@
+=========================================
+Starting All Source Dataset Experiments
+=========================================
+Test dataset: data/preprocessing/test_set_final.csv
+Number of trials: 20
+=========================================
+
+=== Dataset 1/4: Top-K ===
+----------------------------------------
+2026-03-29 20:05:58,099 [INFO] Loading source dataset : data/preprocessing/datasets/topk.csv
+2026-03-29 20:05:58,423 [INFO]   Source samples: 41,826
+2026-03-29 20:05:58,423 [INFO] Loading test set       : data/preprocessing/test_set_final.csv
+2026-03-29 20:05:58,566 [INFO]   Test samples  : 2,820
+2026-03-29 20:05:58,622 [INFO]   Train: 29,278 | Val: 12,548
+2026-03-29 20:05:58,684 [INFO]   Class weights: {'non-argumentative': np.float64(1.753), 'argumentative': np.float64(0.7)}
+2026-03-29 20:05:58,684 [INFO] Loading tokenizer from : dccuchile/bert-base-spanish-wwm-uncased
