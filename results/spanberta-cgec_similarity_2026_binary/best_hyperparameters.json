@@ -1,0 +1,7 @@
+{
+  "learning_rate": 2.6092525857857943e-05,
+  "num_train_epochs": 6,
+  "per_device_train_batch_size": 32,
+  "warmup_ratio": 0.13548844548810032,
+  "weight_decay": 0.01070361989174602
+}

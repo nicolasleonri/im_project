@@ -1,0 +1,96 @@
+{
+  "experiment": {
+    "model": "dccuchile/bert-base-spanish-wwm-uncased",
+    "source_dataset": "data/preprocessing/datasets/full.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "component",
+    "n_trials": 20,
+    "timestamp": "2026-03-30T18:17:43.264422"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.6086419681163747e-05,
+    "num_train_epochs": 5,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.08773097842316985,
+    "weight_decay": 0.07737902524017895
+  },
+  "test_set_metrics": {
+    "accuracy": 0.4798,
+    "precision_macro": 0.4747,
+    "recall_macro": 0.3641,
+    "f1_macro": 0.3265
+  },
+  "per_class_metrics": {
+    "none": {
+      "precision": 0.5010633772862612,
+      "recall": 0.8598540145985402,
+      "f1-score": 0.6331631281913465,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5975609756097561,
+      "recall": 0.07608695652173914,
+      "f1-score": 0.1349862258953168,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.32558139534883723,
+      "recall": 0.15632754342431762,
+      "f1-score": 0.2112321877619447,
+      "support": 806.0
+    }
+  },
+  "classification_report": {
+    "none": {
+      "precision": 0.5010633772862612,
+      "recall": 0.8598540145985402,
+      "f1-score": 0.6331631281913465,
+      "support": 1370.0
+    },
+    "claim": {
+      "precision": 0.5975609756097561,
+      "recall": 0.07608695652173914,
+      "f1-score": 0.1349862258953168,
+      "support": 644.0
+    },
+    "premise": {
+      "precision": 0.32558139534883723,
+      "recall": 0.15632754342431762,
+      "f1-score": 0.2112321877619447,
+      "support": 806.0
+    },
+    "accuracy": 0.4797872340425532,
+    "macro avg": {
+      "precision": 0.47473524941495154,
+      "recall": 0.36408950484819896,
+      "f1-score": 0.326460513949536,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.47294492901632035,
+      "recall": 0.4797872340425532,
+      "f1-score": 0.39880062355845963,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "none": {
+      "total": 1370,
+      "correct": 1178,
+      "accuracy": 0.8598540145985402,
+      "avg_confidence": 0.8694804906845093
+    },
+    "claim": {
+      "total": 644,
+      "correct": 49,
+      "accuracy": 0.07608695652173914,
+      "avg_confidence": 0.8646581172943115
+    },
+    "premise": {
+      "total": 806,
+      "correct": 126,
+      "accuracy": 0.15632754342431762,
+      "avg_confidence": 0.8758456110954285
+    }
+  }
+}
