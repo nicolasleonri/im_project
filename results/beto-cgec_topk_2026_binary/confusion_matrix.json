@@ -1,0 +1,16 @@
+{
+  "labels": [
+    "non-argumentative",
+    "argumentative"
+  ],
+  "matrix": [
+    [
+      1266,
+      104
+    ],
+    [
+      1219,
+      231
+    ]
+  ]
+}

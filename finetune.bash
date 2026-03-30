@@ -7,10 +7,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 
-#SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=2G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=3G
 #SBATCH --gres=gpu:h100:1
-#SBATCH --time=06:00:00
+#SBATCH --time=24:00:00
 
 # Load necessary modules
 module purge
@@ -845,28 +845,292 @@ echo "========================================="
 # echo "========================================="
 
 ##### 1) Top-K
+# echo ""
+# echo "=== Dataset 1/4: Top-K ==="
+# echo "----------------------------------------"
+
+# # BETO Base
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/beto-base_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-base_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # BETO-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/beto-cgec_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-cgec_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# SpanBERTa Base
+# Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/spanberta-base_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-base_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # SpanBERTa-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/spanberta-cgec_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-cgec_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # XLM-RoBERTa Base
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/xlm-roberta-base_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-base_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # XLM-RoBERTa-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/xlm-roberta-cgec_topk_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/topk.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-cgec_topk_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+
+# ##### 2) Similarity
+# echo ""
+# echo "=== Dataset 2/4: Similarity ==="
+# echo "----------------------------------------"
+
+# # BETO Base
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/beto-base_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-base_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # BETO-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/beto-cgec_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/beto-cgec_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # SpanBERTa Base
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/spanberta-base_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path skimai/spanberta-base-cased \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-base_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # SpanBERTa-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/spanberta-cgec_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/spanberta-cgec_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # XLM-RoBERTa Base
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/xlm-roberta-base_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path FacebookAI/xlm-roberta-base \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-base_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # XLM-RoBERTa-CGEC
+# # Binary task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task binary \
+#     --output_dir results/xlm-roberta-cgec_similarity_2026_binary \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+# # Component task
+# python3 -u src/evaluating/finetune_and_eval_model.py \
+#     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
+#     --source_dataset data/preprocessing/datasets/similarity.csv \
+#     --test_dataset $TEST_DATASET \
+#     --task component \
+#     --output_dir results/xlm-roberta-cgec_similarity_2026_component \
+#     --n_trials $N_TRIALS \
+#     --bf16
+
+
+##### 3) Diversity
 echo ""
-echo "=== Dataset 1/4: Top-K ==="
+echo "=== Dataset 3/4: Diversity ==="
 echo "----------------------------------------"
 
 # BETO Base
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/beto-base_topk_2026_binary \
+    --output_dir results/beto-base_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/beto-base_topk_2026_component \
+    --output_dir results/beto-base_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
@@ -874,20 +1138,20 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/beto-cgec_topk_2026_binary \
+    --output_dir results/beto-cgec_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/beto-cgec_topk_2026_component \
+    --output_dir results/beto-cgec_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
@@ -895,20 +1159,20 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/spanberta-base_topk_2026_binary \
+    --output_dir results/spanberta-base_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/spanberta-base_topk_2026_component \
+    --output_dir results/spanberta-base_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
@@ -916,20 +1180,20 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/spanberta-cgec_topk_2026_binary \
+    --output_dir results/spanberta-cgec_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/spanberta-cgec_topk_2026_component \
+    --output_dir results/spanberta-cgec_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
@@ -937,20 +1201,20 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/xlm-roberta-base_topk_2026_binary \
+    --output_dir results/xlm-roberta-base_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/xlm-roberta-base_topk_2026_component \
+    --output_dir results/xlm-roberta-base_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
@@ -958,284 +1222,20 @@ python3 -u src/evaluating/finetune_and_eval_model.py \
 # Binary task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task binary \
-    --output_dir results/xlm-roberta-cgec_topk_2026_binary \
+    --output_dir results/xlm-roberta-cgec_diversity_2026_binary \
     --n_trials $N_TRIALS \
     --bf16
 
 # Component task
 python3 -u src/evaluating/finetune_and_eval_model.py \
     --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/topk.csv \
+    --source_dataset data/preprocessing/datasets/diversity.csv \
     --test_dataset $TEST_DATASET \
     --task component \
-    --output_dir results/xlm-roberta-cgec_topk_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-
-##### 2) Similarity
-echo ""
-echo "=== Dataset 2/4: Similarity ==="
-echo "----------------------------------------"
-
-# BETO Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/beto-base_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-base_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# BETO-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/beto-cgec_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-cgec_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# SpanBERTa Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/spanberta-base_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-base_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# SpanBERTa-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/spanberta-cgec_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-cgec_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# XLM-RoBERTa Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/xlm-roberta-base_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-base_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# XLM-RoBERTa-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/xlm-roberta-cgec_similarity_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/similarity.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-cgec_similarity_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-
-##### 3) Variety
-echo ""
-echo "=== Dataset 3/4: Variety ==="
-echo "----------------------------------------"
-
-# BETO Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/beto-base_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path dccuchile/bert-base-spanish-wwm-uncased \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-base_variety_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# BETO-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/beto-cgec_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/beto-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/beto-cgec_variety_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# SpanBERTa Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/spanberta-base_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path skimai/spanberta-base-cased \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-base_variety_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# SpanBERTa-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/spanberta-cgec_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/spanberta-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/spanberta-cgec_variety_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# XLM-RoBERTa Base
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/xlm-roberta-base_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path FacebookAI/xlm-roberta-base \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-base_variety_2026_component \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# XLM-RoBERTa-CGEC
-# Binary task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task binary \
-    --output_dir results/xlm-roberta-cgec_variety_2026_binary \
-    --n_trials $N_TRIALS \
-    --bf16
-
-# Component task
-python3 -u src/evaluating/finetune_and_eval_model.py \
-    --model_name_or_path /scratch/nicolasal97/im_project/xlm-roberta-cgec \
-    --source_dataset data/preprocessing/datasets/variety.csv \
-    --test_dataset $TEST_DATASET \
-    --task component \
-    --output_dir results/xlm-roberta-cgec_variety_2026_component \
+    --output_dir results/xlm-roberta-cgec_diversity_2026_component \
     --n_trials $N_TRIALS \
     --bf16
 
