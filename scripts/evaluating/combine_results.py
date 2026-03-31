@@ -40,19 +40,27 @@ Usage
   # Use a different JSON filename
   python combine_results.py --input_dir results/ --output combined.csv --json_filename metrics.json
 
+  # Combine all errors.csv files under results/
+  python combine_results.py --errors_dir results/ --output combined_errors.csv
+
   # Sample an existing combined CSV (10 % stratified by model × dataset × task)
   python combine_results.py --sample combined.csv --output sampled.csv
 
 Options
 ───────
-  --input_dir     Root results directory (combine mode, required unless --sample)
+  --input_dir     Root results directory (combine mode, required unless --sample or --errors_dir)
+  --errors_dir    Root results directory (errors mode); walks subdirs for errors.csv files
   --output        Path for the output CSV (required)
   --sample        Path to an existing combined CSV to sample instead of combining
   --frac          Sampling fraction, default 0.10 (10 %)
   --seed          Random seed for reproducibility (default: 42)
   --json_filename JSON file to collect from each subdirectory (default: results.json)
+  --errors_filename
+                  CSV file to collect from each subdirectory in errors mode (default: errors.csv)
   --sep           Delimiter used in output file (default: ;)
   --skip_errors   Warn and skip unparseable folders instead of aborting
+
+Modes are mutually exclusive: --input_dir, --errors_dir, and --sample cannot be combined.
 """
 
 import argparse
@@ -156,6 +164,71 @@ def stratified_sample(df: pd.DataFrame, frac: float, seed: int) -> pd.DataFrame:
     return sampled.reset_index(drop=True)
 
 
+# ── errors combiner ───────────────────────────────────────────────────────────
+
+def combine_errors(input_dir: Path, output: Path, errors_filename: str,
+                   sep: str, skip_errors: bool) -> None:
+    """
+    Walk subdirectories of `input_dir`, find `errors_filename` files,
+    prepend parsed folder metadata to every row, and write a combined CSV
+    to `output`.
+    """
+    csv_paths = sorted(input_dir.glob(f"*/{errors_filename}"))
+    if not csv_paths:
+        sys.exit(
+            f"ERROR: No files named '{errors_filename}' found under '{input_dir}'."
+        )
+
+    frames:  list[pd.DataFrame] = []
+    skipped: int = 0
+
+    for csv_path in csv_paths:
+        folder_name = csv_path.parent.name
+
+        try:
+            meta = parse_folder_name(folder_name)
+        except ValueError as exc:
+            if skip_errors:
+                print(f"WARNING: {exc}")
+                skipped += 1
+                continue
+            sys.exit(f"ERROR: {exc}\n(Use --skip_errors to skip bad folder names.)")
+
+        try:
+            df = pd.read_csv(csv_path, sep=sep, encoding="utf-8")
+        except Exception as exc:
+            if skip_errors:
+                print(f"WARNING: Could not read '{csv_path}': {exc}")
+                skipped += 1
+                continue
+            sys.exit(f"ERROR: Could not read '{csv_path}': {exc}")
+
+        # Prepend metadata columns to the left of every row.
+        for col, val in reversed(meta.items()):
+            df.insert(0, col, val)
+
+        frames.append(df)
+        print(
+            f"  ✓  {folder_name}  ({len(df):,} rows)\n"
+            f"     model={meta['model']}, is_cgec={meta['is_cgec']}, "
+            f"dataset={meta['dataset']}, year={meta['dataset_year']}, "
+            f"task={meta['task']}"
+        )
+
+    if not frames:
+        sys.exit("ERROR: No data collected — nothing to write.")
+
+    combined = pd.concat(frames, ignore_index=True)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    combined.to_csv(output, sep=sep, index=False, encoding="utf-8")
+
+    print(
+        f"\nDone. Combined {len(frames)} file(s)"
+        + (f", skipped {skipped}" if skipped else "")
+        + f"  →  {output}  ({len(combined):,} rows total)"
+    )
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -163,7 +236,8 @@ def main():
         description=(
             "Combine per-experiment results JSONs under a results directory, "
             "prepending metadata parsed from each folder name. "
-            "Alternatively, stratified-sample an existing combined CSV with --sample."
+            "Alternatively, combine errors CSVs with --errors_dir, or "
+            "stratified-sample an existing combined CSV with --sample."
         )
     )
     parser.add_argument(
@@ -171,6 +245,15 @@ def main():
         type=Path,
         default=None,
         help="Root results directory whose subdirectories hold results JSONs (combine mode).",
+    )
+    parser.add_argument(
+        "--errors_dir",
+        type=Path,
+        default=None,
+        help=(
+            "Root results directory whose subdirectories hold errors CSVs (errors mode). "
+            "Mutually exclusive with --input_dir and --sample."
+        ),
     )
     parser.add_argument(
         "--output",
@@ -205,6 +288,11 @@ def main():
         help="JSON file to collect from each subdirectory (default: results.json).",
     )
     parser.add_argument(
+        "--errors_filename",
+        default="errors.csv",
+        help="CSV file to collect from each subdirectory in errors mode (default: errors.csv).",
+    )
+    parser.add_argument(
         "--sep",
         default=";",
         help="Delimiter used in the output CSV (default: ';').",
@@ -215,6 +303,28 @@ def main():
         help="Warn and skip folders that cannot be parsed instead of aborting.",
     )
     args = parser.parse_args()
+
+    # ── mutual exclusivity check ──────────────────────────────────────────────
+    modes = [m for m in ("input_dir", "errors_dir", "sample") if getattr(args, m) is not None]
+    if len(modes) > 1:
+        sys.exit(
+            f"ERROR: --input_dir, --errors_dir, and --sample are mutually exclusive "
+            f"(got: {', '.join('--' + m for m in modes)})."
+        )
+
+    # ── errors mode ───────────────────────────────────────────────────────────
+    if args.errors_dir is not None:
+        errors_dir: Path = args.errors_dir.resolve()
+        if not errors_dir.is_dir():
+            sys.exit(f"ERROR: '{errors_dir}' is not a directory.")
+        combine_errors(
+            input_dir=errors_dir,
+            output=args.output,
+            errors_filename=args.errors_filename,
+            sep=args.sep,
+            skip_errors=args.skip_errors,
+        )
+        return
 
     # ── sample mode ───────────────────────────────────────────────────────────
     if args.sample is not None:
@@ -258,7 +368,10 @@ def main():
 
     # ── combine mode ──────────────────────────────────────────────────────────
     if args.input_dir is None:
-        sys.exit("ERROR: Provide --input_dir (combine mode) or --sample (sample mode).")
+        sys.exit(
+            "ERROR: Provide one of --input_dir (combine mode), "
+            "--errors_dir (errors mode), or --sample (sample mode)."
+        )
 
     input_dir: Path = args.input_dir.resolve()
     if not input_dir.is_dir():
