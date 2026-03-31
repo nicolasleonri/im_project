@@ -1,0 +1,78 @@
+{
+  "experiment": {
+    "model": "/scratch/nicolasal97/im_project/spanberta-cgec",
+    "source_dataset": "data/preprocessing/datasets/full.csv",
+    "test_dataset": "data/preprocessing/test_set_final.csv",
+    "task": "binary",
+    "n_trials": 20,
+    "timestamp": "2026-03-30T22:07:44.624207"
+  },
+  "best_hyperparameters": {
+    "learning_rate": 2.446165242449836e-05,
+    "num_train_epochs": 6,
+    "per_device_train_batch_size": 16,
+    "warmup_ratio": 0.10995450586001657,
+    "weight_decay": 0.07179551313265266
+  },
+  "test_set_metrics": {
+    "accuracy": 0.4812,
+    "precision_macro": 0.4653,
+    "recall_macro": 0.4741,
+    "f1_macro": 0.4418
+  },
+  "per_class_metrics": {
+    "non-argumentative": {
+      "precision": 0.43366619115549215,
+      "recall": 0.22189781021897811,
+      "f1-score": 0.29357798165137616,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.49693251533742333,
+      "recall": 0.7262068965517241,
+      "f1-score": 0.5900812552535725,
+      "support": 1450.0
+    }
+  },
+  "classification_report": {
+    "non-argumentative": {
+      "precision": 0.43366619115549215,
+      "recall": 0.22189781021897811,
+      "f1-score": 0.29357798165137616,
+      "support": 1370.0
+    },
+    "argumentative": {
+      "precision": 0.49693251533742333,
+      "recall": 0.7262068965517241,
+      "f1-score": 0.5900812552535725,
+      "support": 1450.0
+    },
+    "accuracy": 0.48120567375886525,
+    "macro avg": {
+      "precision": 0.46529935324645777,
+      "recall": 0.4740523533853511,
+      "f1-score": 0.4418296184524743,
+      "support": 2820.0
+    },
+    "weighted avg": {
+      "precision": 0.466196747915705,
+      "recall": 0.48120567375886525,
+      "f1-score": 0.4460353386454133,
+      "support": 2820.0
+    }
+  },
+  "class_statistics": {
+    "non-argumentative": {
+      "total": 1370,
+      "correct": 304,
+      "accuracy": 0.22189781021897811,
+      "avg_confidence": 0.9889978170394897
+    },
+    "argumentative": {
+      "total": 1450,
+      "correct": 1053,
+      "accuracy": 0.7262068965517241,
+      "avg_confidence": 0.99229896068573
+    }
+  }
+}
