@@ -191,7 +191,7 @@ cython_debug/
 # Specific stuff
 data/evaluating/combined_errors.csv
 data/evaluating/combined_test_results.csv
-
+data/evaluating/combined_errors_full.csv
 
 # Ruff stuff:
 .ruff_cache/
