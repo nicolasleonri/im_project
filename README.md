@@ -1,4 +1,4 @@
-# Argument Mining Pipeline — CGEC13-20 (Informal Economy)
+# Argument Mining Pipeline — "Cross-domain dataset reuse for Argumentation Mining: A mixed-methods study on Peruvian Spanish journalism"
 
 This repository contains the pipeline used to build a test set for Argumentation Mining in Peruvian Spanish and to run cross-domain transfer experiments.
 
