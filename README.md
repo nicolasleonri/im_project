@@ -96,19 +96,5 @@ python finetune_beto.py ...
 ## Notes
 
 - All CSV files use ; as delimiter
-- LLM outputs are validated and cleaned before use
 - Fine-tuning results are saved per experiment (metrics + predictions)
 - The test set is strictly held out from training
-
----
-
-## Labels
-
-Binary:
-- argumentative
-- non-argumentative
-
-Component:
-- claim
-- premise
-- none
