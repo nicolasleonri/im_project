@@ -177,7 +177,10 @@ perf_by_model
 # write.csv(perf_by_model, "perf_by_model.csv")
 
 # By dataset
+
+unique(df_results_full$dataset)
 perf_by_dataset <- df_results_full %>%
+  filter(dataset %in% c("diversity_", "full_", "similarity_", "topk_")) %>%  # <- add your combined datasets here
   group_by(dataset) %>%
   summarise(
     mean_accuracy  = round(mean(accuracy,        na.rm = TRUE), 3),
